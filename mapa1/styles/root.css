@@ -35,10 +35,14 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-famil
 /* Asegura que si hay controles Leaflet en top-left, bajen un poco (fallback) */
 .leaflet-top.leaflet-left { top: 64px; }
 
-.ui-card{
-  position:absolute; right:14px; z-index:1100; padding:10px;
-  background:rgba(255,255,255,0.9); border:1px solid var(--border);
-  border-radius:14px; backdrop-filter: blur(6px);
+.ui-card {
+  position: absolute;
+  z-index: 1100;
+  padding: 10px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
   box-shadow: 0 4px 24px rgba(12,18,30,.06);
 }
 .ui-card.small{ top:70px; }
@@ -101,3 +105,11 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-famil
 }
 .basemap-card .bm-title{ margin-top:4px; font-size:11px; color:var(--muted); }
 .basemap-card.active .bm-thumb{ outline:2px solid #1a90ff; outline-offset:2px; }
+
+
+#grpBaseMaps {
+  bottom: 14px;   /* separación desde abajo */
+  left: 14px;     /* separación desde la izquierda */
+  top: auto;      /* anulamos top */
+  right: auto;    /* anulamos right */
+}
