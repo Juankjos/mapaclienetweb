@@ -183,9 +183,14 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-famil
 
   text-align: center;
   line-height: 1.2;
+  color: #fff; /* texto blanco para contrastar */
 
-  position: fixed;
-  right: 16px;
+  /* Fondo degradado animado */
+  background: linear-gradient(180deg, #0451a4, #101773, #042d85);
+  background-size: 100% 300%; /* más grande para animar */
+  animation: gradientMove 6s ease-in-out infinite;
+  border: none;
+    right: 16px;
   bottom: 16px;
   z-index: 1030 !important;
 }
@@ -193,6 +198,13 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-famil
 .offcanvas-toggle-btn i {
   font-size: 2rem;
   margin-bottom: .25rem;
+}
+
+/* Animación: mueve el fondo arriba-abajo */
+@keyframes gradientMove {
+  0% { background-position: 50% 0%; }
+  50% { background-position: 50% 100%; }
+  100% { background-position: 50% 0%; }
 }
 
 
