@@ -60,7 +60,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="scripts/app.js"></script>
+    <script type="module" src="scripts/main.js"></script>
     <script type="importmap">
     {
         "imports": {
@@ -68,6 +68,6 @@
         }
     }
     </script>
-    <script type="module" src="scripts/car-overlay.js"></script>
+    <script type="module" src="scripts/ui/car-overlay.js"></script>
 </body>
 </html>

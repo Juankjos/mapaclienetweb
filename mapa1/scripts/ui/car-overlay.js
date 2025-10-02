@@ -52,20 +52,21 @@ if (!map) {
   loader.load(glbUrl, (gltf)=>{
     const car = gltf.scene;
     // Autoscale según bounding box
-    const box = new THREE.Box3().setFromObject(car);
-    const size = box.getSize(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    const target = 2.0; // tamaño objetivo en unidades
+    const box1 = new THREE.Box3().setFromObject(car);
+    const size1 = box1.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size1.x, size1.y, size1.z) || 1;
+    const target = 2.0;
     const k = target / maxDim;
     car.scale.setScalar(k);
-    console.log('[car-overlay] GLB cargado. bbox size:', size, 'scale:', k);
 
-    // Centrar el modelo al origen
-    const center = box.getCenter(new THREE.Vector3());
-    car.position.sub(center); // mover al origen
-    car.position.set(0,0,0);
+    // 🔁 Recalcula el bounding box ya escalado y centra al origen
+    const box2 = new THREE.Box3().setFromObject(car);
+    const center = box2.getCenter(new THREE.Vector3());
+    car.position.sub(center);            // ✅ centrar
+
     car.rotation.y = Math.PI;
     modelGroup.add(car);
+    car.updateMatrixWorld(true);
     carReady = true;
   }, (evt)=>{
     const total = evt.total || 0; const loaded = evt.loaded || 0;
