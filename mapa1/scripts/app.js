@@ -16,6 +16,7 @@
         return s;
       }
     };
+    const API_BASE = './index.php'; 
 
     // ======================
     // Mapa base (Esri)
@@ -285,15 +286,20 @@ async function cargar(fitAfterLoad=false){
       const inicio = elInicio.value;
       const fin    = elFin.value;
       const filtro = elFiltro.value;
-      const qs = new URLSearchParams({ action:'fetch_reports', inicio, fin, filter:filtro });
-      const url = `${location.pathname}?${qs.toString()}`;
+      const qs  = new URLSearchParams({
+        action: 'fetch_reports',
+        inicio, fin, filter: filtro
+      });
+      const url = `${API_BASE}?${qs.toString()}`;
 
       elHud.textContent = 'Cargando…';
       showLoading(true);                 // NUEVO: muestra overlay
       resetLayers();
 
       try{
-        const resp = await fetch(url);
+        const resp = await fetch(url, {
+          headers: { 'Accept': 'application/json' }
+        });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
         if (!data.ok) throw new Error(data.error || 'Respuesta inválida');
