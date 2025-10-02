@@ -108,8 +108,63 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-famil
 
 
 #grpBaseMaps {
-  bottom: 14px;   /* separación desde abajo */
-  left: 14px;     /* separación desde la izquierda */
-  top: auto;      /* anulamos top */
-  right: auto;    /* anulamos right */
+  bottom: 14px;
+  left: 14px;
+  top: auto;
+  right: auto;
+}
+
+.map { position: relative; }
+
+.servicio-card {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.servicio-item {
+  border-left: 4px solid #0d6efd; /* Azul Bootstrap */
+  padding-left: 12px;
+}
+
+.servicio-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280; /* gris */
+  font-weight: 600;
+}
+
+.servicio-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827; /* casi negro */
+  margin-top: 2px;
+}
+
+.offcanvas {
+  --bs-offcanvas-width: 380px;
+  z-index: 1100;
+}
+.offcanvas-toggle-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1101;
+}
+
+#offcanvas-tecnico {
+  background-color: #203e99;
+  border-color: #203e99;
+  border-inline-color: #203e99;
+}
+
+#offcanvas-tecnico:hover {
+  background-color: #193077;
+  border-color: #193077;
+  outline: #193077;
 }
