@@ -184,10 +184,10 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-famil
   text-align: center;
   line-height: 1.2;
 
-  position: fixed;         /* si lo tienes flotante */
-  right: 16px;             /* ajusta a tu gusto */
-  bottom: 16px;            /* ajusta a tu gusto */
-  z-index: 1030 !important;/* < 1040 (backdrop) y 1045 (offcanvas) */
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1030 !important;
 }
 
 .offcanvas-toggle-btn i {
