@@ -22,13 +22,12 @@
         <div class="map">
 
         <button class="btn btn-primary offcanvas-toggle-btn"
-                id="offcanvas-tecnico"
-                type="button"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#panelServicio"
-                aria-controls="panelServicio">
-                <i class="bi bi-tools"></i>
-            Tú Técnico
+            id="offcanvas-tecnico"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#panelServicio"
+            aria-controls="panelServicio">
+            <i class="bi bi-tools"></i><span style="font-size:1rem;">Tú Técnico</span>
         </button>
 
         <!-- Basemap switcher (compact) -->
@@ -126,22 +125,50 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA: Comentarios -->
+            <!-- PESTAÑA: Evaluación -->
             <div class="tab-pane fade" id="pane-comentarios" role="tabpanel" aria-labelledby="tab-comentarios">
-                <div class="mb-3">
-                    <label for="svc-comentarios" class="form-label">Agregar comentario</label>
-                    <textarea class="form-control" id="svc-comentarios" rows="5" placeholder="Escribe aquí…"></textarea>
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-secondary" id="btnLimpiarComentario">Limpiar</button>
-                    <button class="btn btn-primary" id="btnGuardarComentario">Guardar</button>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5 class="mb-3 fw-bold text-dark">
+                            Tú opinión es muy importante para nosotros, por favor rellena nuestra retroalimentación.
+                        </h5>
+
+                        <!-- Rating: 5 estrellas -->
+                        <fieldset class="rating-stars mb-3" aria-labelledby="rating-label">
+                        <legend id="rating-label" class="visually-hidden">Calificación</legend>
+                        <input type="radio" name="svc-rating" id="svc-rating-5" value="5" />
+                        <label for="svc-rating-5" title="Excelente" aria-label="5 estrellas"></label>
+                        <input type="radio" name="svc-rating" id="svc-rating-4" value="4" />
+                        <label for="svc-rating-4" title="Muy bueno" aria-label="4 estrellas"></label>
+                        <input type="radio" name="svc-rating" id="svc-rating-3" value="3" />
+                        <label for="svc-rating-3" title="Bueno" aria-label="3 estrellas"></label>
+                        <input type="radio" name="svc-rating" id="svc-rating-2" value="2" />
+                        <label for="svc-rating-2" title="Regular" aria-label="2 estrellas"></label>
+                        <input type="radio" name="svc-rating" id="svc-rating-1" value="1" />
+                        <label for="svc-rating-1" title="Malo" aria-label="1 estrella"></label>
+                        </fieldset>
+
+                        <!-- Valor seleccionado -->
+                        <input type="hidden" id="svc-rating-value" value="0" />
+
+                        <!-- Comentario -->
+                        <div class="mb-2">
+                            <h7 class="mb-3 fw-bold text-dark">
+                                Danos tú opinión:
+                            </h7>
+                            <textarea class="form-control" id="svc-comentarios" rows="5" maxlength="300"
+                                placeholder="Escribe aquí… (máx. 300 caracteres)"></textarea>
+                            <div class="form-text text-end"><span id="svc-count">0</span>/300</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" id="btnGuardarComentario" type="button">Guardar</button>
+                        </div>
+                    </div>
                 </div>
                 <hr>
-                <div id="listaComentarios" class="vstack gap-2">
-                    <!-- Aquí puedes renderizar comentarios previos -->
-                </div>
+                <div id="listaComentarios" class="vstack gap-2"><!-- render historial aquí --></div>
             </div>
-        </div>
         </div>
     </div>
 
