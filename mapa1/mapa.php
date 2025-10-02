@@ -128,18 +128,18 @@
 
             <!-- PESTAÑA: Comentarios -->
             <div class="tab-pane fade" id="pane-comentarios" role="tabpanel" aria-labelledby="tab-comentarios">
-            <div class="mb-3">
-                <label for="svc-comentarios" class="form-label">Agregar comentario</label>
-                <textarea class="form-control" id="svc-comentarios" rows="5" placeholder="Escribe aquí…"></textarea>
-            </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-outline-secondary" id="btnLimpiarComentario">Limpiar</button>
-                <button class="btn btn-primary" id="btnGuardarComentario">Guardar</button>
-            </div>
-            <hr>
-            <div id="listaComentarios" class="vstack gap-2">
-                <!-- Aquí puedes renderizar comentarios previos -->
-            </div>
+                <div class="mb-3">
+                    <label for="svc-comentarios" class="form-label">Agregar comentario</label>
+                    <textarea class="form-control" id="svc-comentarios" rows="5" placeholder="Escribe aquí…"></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary" id="btnLimpiarComentario">Limpiar</button>
+                    <button class="btn btn-primary" id="btnGuardarComentario">Guardar</button>
+                </div>
+                <hr>
+                <div id="listaComentarios" class="vstack gap-2">
+                    <!-- Aquí puedes renderizar comentarios previos -->
+                </div>
             </div>
         </div>
         </div>
