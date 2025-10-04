@@ -1,0 +1,48 @@
+.map{
+  position:relative; 
+  height:100%;
+}
+
+#map{
+  height:100%;
+}
+
+
+/* === Basemap switcher compacto === */
+.basemap-grid{ display:flex; gap:8px; }
+
+.basemap-card{ 
+  text-align:center; 
+  cursor:pointer; 
+  user-select:none; 
+  width:72px; 
+}
+
+.basemap-card .bm-thumb{
+  width:100%; aspect-ratio:1/1; 
+  border-radius:12px; 
+  background-size:cover; 
+  background-position:center;
+  border:1px solid var(--border); 
+  box-shadow:inset 0 0 10px rgba(0,0,0,.2);
+}
+
+.basemap-card .bm-title{ 
+  margin-top:4px; 
+  font-size:11px; 
+  color:var(--muted); 
+}
+
+.basemap-card.active .bm-thumb{ 
+  outline:2px solid #1a90ff; 
+  outline-offset:2px; 
+}
+
+#grpBaseMaps {
+  bottom: 14px;
+  right: 14px;
+  left: auto;
+  top: auto;
+}
+
+.map { position: relative; }

@@ -1,0 +1,36 @@
+/* — Modal mínimo para datos del cliente — */
+.modal {
+  position: fixed; inset: 0; display: none; place-items: center;
+  z-index: 1300; background: rgba(255,255,255,.35); backdrop-filter: blur(2px);
+}
+
+.modal.open { 
+  display: grid; 
+}
+
+.modal-card {
+  width: min(520px, 92vw); background: #ffffff;
+  border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px;
+  color: var(--text); box-shadow: 0 10px 40px rgba(12,18,30,.10);
+}
+
+.modal-card h4 {
+  margin: 0 0 6px 0; font-size: 16px; color: var(--text);
+}
+
+.modal-row { 
+  margin: 4px 0; color: var(--muted); 
+}
+
+.modal-actions { 
+  display:flex; 
+  justify-content:flex-end; 
+  margin-top:10px; 
+}
+
+.modal-actions button {
+  background: #ffffff;
+  border: 1px solid var(--border); color: var(--text); border-radius: 10px; 
+  padding: 8px 12px;     margin-top: 12px;
+  font-weight: 700; cursor: pointer;
+}

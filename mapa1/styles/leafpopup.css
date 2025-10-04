@@ -1,0 +1,18 @@
+/* Ocultar cualquier popup default de Leaflet: queremos solo el modal */
+.leaflet-popup,
+.leaflet-popup-pane { 
+    display: none !important; 
+}
+
+.leaflet-top.leaflet-left{ 
+    top: calc(var(--nav-h) + 8px) !important; 
+}
+
+.leaflet-top.leaflet-left { 
+  top: calc(var(--nav-h) + 8px) !important; 
+}
+
+.leaflet-top.leaflet-left{
+  top: calc(var(--nav-h) + 8px) !important;
+  left: calc(12px + 390px) !important; /* panel (380) + margen */
+}

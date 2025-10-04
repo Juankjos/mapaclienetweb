@@ -8,44 +8,111 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="styles/root.css" />
+    <link rel="stylesheet" href="styles/ui.css" />
+    <link rel="stylesheet" href="styles/modal.css" />
+    <link rel="stylesheet" href="styles/mapa.css" />
+    <link rel="stylesheet" href="styles/starrate.css" />
+    <link rel="stylesheet" href="styles/offcanvas.css" />
+    <link rel="stylesheet" href="styles/servicio.css" />
+    <link rel="stylesheet" href="styles/leafpopup.css" />
+    <link rel="stylesheet" href="styles/navbar.css" />
+    <link rel="stylesheet" href="styles/tecnico.css" />
+    <link rel="stylesheet" href="styles/tecnicopanel.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-
-    </style>
-    </head>
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
     <body>
+    <!-- NAVBAR SUPERIOR -->
+    <nav class="navbar navbar-light bg-white shadow-sm app-navbar fixed-top">
+        <div class="container-fluid">
+        <div class="d-flex align-items-center">
+            <!-- Botón hamburguesa que abre el menú lateral -->
+            <button class="navbar-toggler me-2" type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#menuLateral"
+                    aria-controls="menuLateral"
+                    aria-label="Abrir menú">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <img src="icon/icono.png" alt="Icono técnico" class="nav-tech-icon">
+        </div>
+        </div>
+    </nav>
+
+    <!-- OFFCANVAS: MENÚ LATERAL -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="menuLateral" aria-labelledby="menuLateralLabel">
+        <div class="offcanvas-body">
+        <!-- PERFIL -->
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-circle bg-light border" style="width:48px;height:48px; display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-person fs-4 text-secondary"></i>
+            </div>
+            <div>
+            <div class="fw-semibold">Juan Carlos G. Medina</div>
+            <a href="#" class="link-primary text-decoration-none small">Administrar cuenta</a>
+            </div>
+        </div>
+
+        <!-- DROPDOWNS COMO ACORDEÓN -->
+        <div class="accordion" id="menuAccordion">
+            <!-- Órdenes de Servicio -->
+            <div class="accordion-item">
+            <h2 class="accordion-header" id="acc-os-h">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#acc-os" aria-expanded="false" aria-controls="acc-os">
+                Órdenes de Servicio
+                </button>
+            </h2>
+            <div id="acc-os" class="accordion-collapse collapse" aria-labelledby="acc-os-h" data-bs-parent="#menuAccordion">
+                <div class="accordion-body">
+                <ul class="list-unstyled mb-0">
+                    <li><a href="#" class="link-body-emphasis text-decoration-none">Historial</a></li>
+                </ul>
+                </div>
+            </div>
+            </div>
+
+            <!-- Ayuda -->
+            <div class="accordion-item">
+            <h2 class="accordion-header" id="acc-ayuda-h">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#acc-ayuda" aria-expanded="false" aria-controls="acc-ayuda">
+                Ayuda
+                </button>
+            </h2>
+            <div id="acc-ayuda" class="accordion-collapse collapse" aria-labelledby="acc-ayuda-h" data-bs-parent="#menuAccordion">
+                <div class="accordion-body">
+                <ul class="list-unstyled mb-0">
+                    <li><a href="#" class="link-body-emphasis text-decoration-none">Contacto soporte</a></li>
+                </ul>
+                </div>
+            </div>
+            </div>
+        </div> <!-- /accordion -->
+        </div>
+    </div>
+
     <div class="wrap">
         <div class="map">
-
-        <button class="btn btn-primary offcanvas-toggle-btn"
-            id="offcanvas-tecnico"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#panelServicio"
-            aria-controls="panelServicio">
-            <i class="bi bi-tools"></i><span style="font-size:1rem;">Tú Técnico</span>
-        </button>
-
         <!-- Basemap switcher (compact) -->
         <div class="ui-card below" id="grpBaseMaps">
             <div class="basemap-grid">
             <div class="basemap-card" data-base="sat">
                 <div class="bm-thumb"
-                    style="background-image:url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/3/2/2');"></div>
+                style="background-image:url('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/3/2/2');"></div>
                 <div class="bm-title">Satélite</div>
             </div>
             <div class="basemap-card active" data-base="light">
                 <div class="bm-thumb"
-                    style="background-image:url('https://a.basemaps.cartocdn.com/rastertiles/voyager/12/1138/1657.png');"></div>
+                style="background-image:url('https://a.basemaps.cartocdn.com/rastertiles/voyager/12/1138/1657.png');"></div>
                 <div class="bm-title">Claro HD</div>
             </div>
             <div class="basemap-card" data-base="dark">
                 <div class="bm-thumb"
-                    style="background-image:url('https://a.basemaps.cartocdn.com/dark_all/3/2/2.png');"></div>
+                style="background-image:url('https://a.basemaps.cartocdn.com/dark_all/3/2/2.png');"></div>
                 <div class="bm-title">Oscuro</div>
             </div>
             </div>
@@ -56,10 +123,44 @@
             <div class="loading-msg">Cargando…</div>
         </div>
         <div class="toast" id="toast" style="display:none"></div>
+
+        <!-- SIDEBAR TÉCNICO FIJO (ya no offcanvas) -->
+        <aside id="panelTecnico" class="tecnico-panel">
+        <div class="tecnico-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0">Detalles de tu servicio</h5>
+        </div>
+
+        <section aria-labelledby="svc-title">
+        <header class="section-sticky">
+            <h3 id="svc-title" class="section-title mb-1">Servicio</h3>
+        </header>
+
+        <div class="servicio-card">
+            <div class="servicio-item">
+                <div class="servicio-label">Contrato</div>
+                <div class="servicio-value">123123-3</div>
+            </div>
+            <div class="servicio-item">
+                <div class="servicio-label">Orden de Servicio</div>
+                <div class="servicio-value">Cambio de Tecnología</div>
+            </div>
+            <div class="servicio-item">
+                <div class="servicio-label">Técnico</div>
+                <div class="servicio-value">Salvador Enríque Bustamante</div>
+            </div>
+            <div class="servicio-item">
+                <div class="servicio-label">Dirigiéndose a</div>
+                <div class="servicio-value">C. González Hermosillo 191, San Antonio El Alto, 47640 Tepatitlán de Morelos, Jal.</div>
+            </div>
+        </div>
+        </section>
+
+        </aside>
+
         </div>
     </div>
 
-    <!-- Modal: datos del cliente -->
+    <!-- Modal: datos del cliente (se mantiene por si lo usas en el mapa) -->
     <div id="clientModal" class="modal" aria-hidden="true">
         <div class="modal-card">
         <h4 id="cm-title">Datos del cliente</h4>
@@ -74,104 +175,6 @@
         </div>
     </div>
 
-    <!-- OFFCANVAS DERECHA con pestañas -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="panelServicio" aria-labelledby="panelServicioLabel">
-        <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="panelServicioLabel">Detalles de Técnico</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-        </div>
-
-        <div class="offcanvas-body p-0 d-flex flex-column">
-
-        <!-- Tabs -->
-        <ul class="nav nav-tabs px-3" id="tabsServicio" role="tablist">
-            <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-servicio" data-bs-toggle="tab"
-                    data-bs-target="#pane-servicio" type="button" role="tab"
-                    aria-controls="pane-servicio" aria-selected="true">
-                Servicio
-            </button>
-            </li>
-            <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-comentarios" data-bs-toggle="tab"
-                    data-bs-target="#pane-comentarios" type="button" role="tab"
-                    aria-controls="pane-comentarios" aria-selected="false">
-                Evaluación
-            </button>
-            </li>
-        </ul>
-
-        <!-- Contenido de pestañas -->
-        <div class="tab-content flex-grow-1 p-3" id="tabsServicioContent">
-            <!-- PESTAÑA: Servicio -->
-            <div class="tab-pane fade show active" id="pane-servicio" role="tabpanel" aria-labelledby="tab-servicio">
-                <div class="servicio-card">
-                    <div class="servicio-item">
-                        <div class="servicio-label">Contrato</div>
-                        <div class="servicio-value">123123-3</div>
-                    </div>
-                    <div class="servicio-item">
-                        <div class="servicio-label">Orden de Servicio</div>
-                        <div class="servicio-value">Cambio de Tecnología</div>
-                    </div>
-                    <div class="servicio-item">
-                        <div class="servicio-label">Técnico</div>
-                        <div class="servicio-value">Salvador Enríque Bustamante</div>
-                    </div>
-                    <div class="servicio-item">
-                        <div class="servicio-label">Dirigiéndose a</div>
-                        <div class="servicio-value">C. González Hermosillo 191, San Antonio El Alto, 47640 Tepatitlán de Morelos, Jal.</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PESTAÑA: Evaluación -->
-            <div class="tab-pane fade" id="pane-comentarios" role="tabpanel" aria-labelledby="tab-comentarios">
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <h5 class="mb-3 fw-bold text-dark">
-                            Tú opinión es muy importante para nosotros, por favor rellena nuestra retroalimentación.
-                        </h5>
-
-                        <!-- Rating: 5 estrellas -->
-                        <fieldset class="rating-stars mb-3" aria-labelledby="rating-label">
-                        <legend id="rating-label" class="visually-hidden">Calificación</legend>
-                        <input type="radio" name="svc-rating" id="svc-rating-5" value="5" />
-                        <label for="svc-rating-5" title="Excelente" aria-label="5 estrellas"></label>
-                        <input type="radio" name="svc-rating" id="svc-rating-4" value="4" />
-                        <label for="svc-rating-4" title="Muy bueno" aria-label="4 estrellas"></label>
-                        <input type="radio" name="svc-rating" id="svc-rating-3" value="3" />
-                        <label for="svc-rating-3" title="Bueno" aria-label="3 estrellas"></label>
-                        <input type="radio" name="svc-rating" id="svc-rating-2" value="2" />
-                        <label for="svc-rating-2" title="Regular" aria-label="2 estrellas"></label>
-                        <input type="radio" name="svc-rating" id="svc-rating-1" value="1" />
-                        <label for="svc-rating-1" title="Malo" aria-label="1 estrella"></label>
-                        </fieldset>
-
-                        <!-- Valor seleccionado -->
-                        <input type="hidden" id="svc-rating-value" value="0" />
-
-                        <!-- Comentario -->
-                        <div class="mb-2">
-                            <h7 class="mb-3 fw-bold text-dark">
-                                Danos tú opinión:
-                            </h7>
-                            <textarea class="form-control" id="svc-comentarios" rows="5" maxlength="300"
-                                placeholder="Escribe aquí… (máx. 300 caracteres)"></textarea>
-                            <div class="form-text text-end"><span id="svc-count">0</span>/300</div>
-                        </div>
-
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-primary" id="btnGuardarComentario" type="button">Guardar</button>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div id="listaComentarios" class="vstack gap-2"><!-- render historial aquí --></div>
-            </div>
-        </div>
-    </div>
-
     <!-- SCRIPTS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -180,44 +183,12 @@
             crossorigin="anonymous"></script>
     <script type="module" src="scripts/main.js"></script>
     <script type="importmap">
-    {
+        {
         "imports": {
-        "three": "https://unpkg.com/three@0.159.0/build/three.module.js"
+            "three": "https://unpkg.com/three@0.159.0/build/three.module.js"
         }
-    }
+        }
     </script>
     <script type="module" src="scripts/ui/car-overlay.js"></script>
-    <script>
-        // Rellenar campos de ejemplo cuando abras desde algún evento
-        function abrirPanelConDatos(datos = {}) {
-        document.getElementById('svc-folio').value     = datos.folio ?? '—';
-        document.getElementById('svc-cliente').value   = datos.cliente ?? '—';
-        document.getElementById('svc-direccion').value = datos.direccion ?? '—';
-        document.getElementById('svc-creacion').value  = datos.creacion ?? '—';
-        document.getElementById('svc-ejecucion').value = datos.ejecucion ?? '—';
-
-        const offcanvasEl = document.getElementById('panelServicio');
-        const panel = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
-        panel.show();
-
-        // Si quieres forzar abrir en la pestaña "Servicio"
-        const tabTrigger = document.querySelector('#tab-servicio');
-        bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
-        }
-
-        // Botones simples para comentarios
-        document.getElementById('btnLimpiarComentario')?.addEventListener('click', () => {
-        document.getElementById('svc-comentarios').value = '';
-        });
-        document.getElementById('btnGuardarComentario')?.addEventListener('click', () => {
-        const txt = document.getElementById('svc-comentarios').value.trim();
-        if (!txt) return;
-        const item = document.createElement('div');
-        item.className = 'border rounded p-2';
-        item.textContent = txt;
-        document.getElementById('listaComentarios').prepend(item);
-        document.getElementById('svc-comentarios').value = '';
-        });
-    </script>
     </body>
 </html>

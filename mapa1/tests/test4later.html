@@ -1,0 +1,40 @@
+<!-- ===== EVALUACIÓN ===== -->
+            <section aria-labelledby="eval-title">
+            <h6 id="eval-title" class="section-title">Evaluación</h6>
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                <h5 class="mb-3 fw-bold text-dark">
+                    Tú opinión es muy importante para nosotros, por favor rellena nuestra retroalimentación.
+                </h5>
+
+                <!-- Rating: 5 estrellas -->
+                <fieldset class="rating-stars mb-3" aria-labelledby="rating-label">
+                    <legend id="rating-label" class="visually-hidden">Calificación</legend>
+                    <input type="radio" name="svc-rating" id="svc-rating-5" value="5" />
+                    <label for="svc-rating-5" title="Excelente" aria-label="5 estrellas"></label>
+                    <input type="radio" name="svc-rating" id="svc-rating-4" value="4" />
+                    <label for="svc-rating-4" title="Muy bueno" aria-label="4 estrellas"></label>
+                    <input type="radio" name="svc-rating" id="svc-rating-3" value="3" />
+                    <label for="svc-rating-3" title="Bueno" aria-label="3 estrellas"></label>
+                    <input type="radio" name="svc-rating" id="svc-rating-2" value="2" />
+                    <label for="svc-rating-2" title="Regular" aria-label="2 estrellas"></label>
+                    <input type="radio" name="svc-rating" id="svc-rating-1" value="1" />
+                    <label for="svc-rating-1" title="Malo" aria-label="1 estrella"></label>
+                </fieldset>
+
+                <!-- Valor seleccionado -->
+                <input type="hidden" id="svc-rating-value" value="0" />
+
+                <!-- Comentario -->
+                <div class="mb-2">
+                    <h7 class="mb-3 fw-bold text-dark">Danos tú opinión:</h7>
+                    <textarea class="form-control" id="svc-comentarios" rows="5" maxlength="300"
+                            placeholder="Escribe aquí… (máx. 300 caracteres)"></textarea>
+                    <div class="form-text text-end"><span id="svc-count">0</span>/300</div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" id="btnGuardarComentario" type="button">Guardar</button>
+                </div>
+                </div>
+            </div>

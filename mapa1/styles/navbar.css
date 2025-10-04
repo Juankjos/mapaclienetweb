@@ -1,0 +1,11 @@
+.app-navbar{ 
+  height: var(--nav-h); 
+  z-index:1200; 
+}
+
+
+.nav-tech-icon{ 
+  height:44px; 
+  width:auto; 
+  display:block; 
+}

@@ -1,0 +1,40 @@
+/* ========= CALIFICACIÓN POR ESTRELLAS ========= */
+.rating-stars {
+    display: inline-flex;
+    flex-direction: row-reverse; 
+    gap: .25rem;
+    position: relative;
+    user-select: none;
+}
+
+.rating-stars input {
+    display: none;
+}
+
+.rating-stars label {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 80%;
+    transition: transform .15s ease-in-out;
+}
+
+/* Estrella vacía */
+.rating-stars label {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpolygon fill='%23e3e3e3' points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3e%3c/svg%3e");
+}
+
+/* Hover (rellena estrella + todas a la derecha por row-reverse) */
+.rating-stars label:hover,
+.rating-stars label:hover ~ label {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpolygon fill='%23d8b11e' points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3e%3c/svg%3e");
+    transform: scale(1.05);
+}
+
+/* Checked (persistente) */
+.rating-stars input:checked ~ label,
+.rating-stars input:checked ~ label ~ label {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpolygon fill='%23fcd93a' points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/%3e%3c/svg%3e");
+}
