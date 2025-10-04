@@ -4,13 +4,16 @@ r"""
 ingesta_json_a_sql_clientes.py
 
 Script para ingerir datos desde varios archivos JSON a la base de datos MySQL "clientes"
-(servida por XAMPP en localhost/phpMyAdmin). Inserta/actualiza registros en la tabla "reportes".
+(servida por XAMPP en localhost/phpMyAdmin). Inserta/actualiza registros en la tabla "reportes"
+y crea (si no existe) el registro inicial relacionado en "produccion".
 
 Requisitos previos (una vez):
     pip install mysql-connector-python
 
 Suposiciones:
-- La tabla `reportes` tiene PK en `IDReporte` (INT o BIGINT) para permitir ON DUPLICATE KEY UPDATE.
+- La tabla `reportes` tiene PK o UNIQUE en `IDReporte` para permitir ON DUPLICATE KEY UPDATE.
+- La tabla `produccion` tiene PK autoincremental `IDProduccion` y una FK `IDReporte` → reportes(IDReporte).
+  Se recomienda UNIQUE KEY en produccion(IDReporte) para asegurar un registro por reporte.
 - Los archivos JSON existen en C:\xampp\htdocs\mapaclienetweb\mapa1\jsons
 - Formato de fecha en GetCONCITAS.json: "dd/mm/yyyy hh:MM:ss a. m./p. m." (ej. "02/10/2025 12:00:00 a. m.")
 
@@ -128,11 +131,18 @@ def get_nested(d: Dict[str, Any], keys: list[str], default=None):
 
 
 # ------------------------- INGESTA ------------------------- #
-def ingest_reportes(conn):
+def ingest_reportes_y_produccion(conn):
     """
     Lee los cuatro JSON y hace un UPSERT en `reportes` con los campos:
     IDReporte (Clv_Cita), Contrato (IdContrato), Nombre (NomCompleto),
     Direccion (Calle NumExt Colonia Ciudad), Problema (Descripcion), FechaAgendada (Fecha)
+
+    Adicionalmente, inserta en `produccion` (si no existe un registro para ese IDReporte):
+      - IDProduccion: autoincrement (lo asigna MySQL)
+      - IDReporte: FK al reporte recién insertado/actualizado
+      - Status: 'En camino' (por defecto)
+      - FechaHoraInicio: NOW() (fecha/hora actuales del servidor MySQL)
+      - FechaHoraFin: NULL (vacío por ahora)
     """
     # Cargar JSONs
     ruta1 = os.path.join(JSON_DIR, F_BUSCA_DET_CITAS)
@@ -182,8 +192,8 @@ def ingest_reportes(conn):
     fecha_raw = concitas.get("Fecha")
     fecha_agendada = parse_fecha_sql(fecha_raw) if fecha_raw else None
 
-    # Preparar SQL con UPSERT
-    sql = """
+    # UPSERT en reportes
+    sql_rep = """
         INSERT INTO reportes (IDReporte, Contrato, Nombre, Direccion, Problema, FechaAgendada)
         VALUES (%s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
@@ -193,22 +203,30 @@ def ingest_reportes(conn):
             Problema = VALUES(Problema),
             FechaAgendada = VALUES(FechaAgendada);
     """
+    vals_rep = (id_reporte, contrato, nombre, direccion, problema, fecha_agendada)
 
-    vals = (
-        id_reporte,
-        contrato,
-        nombre,
-        direccion,
-        problema,
-        fecha_agendada,
-    )
+    # Inserción condicional en produccion (si no existe para ese IDReporte)
+    # Usa NOW() para la hora actual del servidor. FechaHoraFin = NULL.
+    sql_prod = """
+        INSERT INTO produccion (IDReporte, Status, FechaHoraInicio, FechaHoraFin)
+        SELECT %s, %s, NOW(), NULL
+        WHERE NOT EXISTS (SELECT 1 FROM produccion WHERE IDReporte = %s);
+    """
+    vals_prod = (id_reporte, "En camino", id_reporte)
 
     with conn.cursor() as cur:
-        cur.execute(sql, vals)
+        # reportes
+        cur.execute(sql_rep, vals_rep)
+        # produccion (solo si no hay un registro para este IDReporte)
+        cur.execute(sql_prod, vals_prod)
+
     conn.commit()
 
-    print("✔ Inserción/actualización en `reportes` completada.")
-    print(f"  IDReporte: {id_reporte}")
+    print("✔ Inserción/actualización en `reportes` y creación/verificación en `produccion` completadas.")
+    print(f"  - reportes.IDReporte: {id_reporte}")
+    print(f"  - produccion.Status: En camino")
+    print(f"  - produccion.FechaHoraInicio: NOW() en MySQL")
+    print(f"  - produccion.FechaHoraFin: NULL")
     print(f"  Contrato: {contrato}")
     print(f"  Nombre: {nombre}")
     print(f"  Dirección: {direccion}")
@@ -228,7 +246,7 @@ def connect_db():
 
 
 def main():
-    print("== Ingesta JSON → MySQL (tabla reportes) ==")
+    print("== Ingesta JSON → MySQL (reportes + produccion) ==")
     print(f"Directorio JSON: {JSON_DIR}")
     try:
         conn = connect_db()
@@ -237,7 +255,7 @@ def main():
         return
 
     try:
-        ingest_reportes(conn)
+        ingest_reportes_y_produccion(conn)
     except Exception as e:
         conn.rollback()
         print("✖ Error durante la ingesta:", e)
