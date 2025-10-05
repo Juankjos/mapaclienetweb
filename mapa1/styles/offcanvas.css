@@ -42,3 +42,90 @@
 }
 
 .offcanvas-toggle-btn{ display:none !important; }
+
+/* === Botones planos del menú lateral */
+.menu-simple {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.menu-btn {
+    color: var(--text, #5f6b7a);
+    font-weight: 500;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: transparent;
+    padding: 6px 0;
+    padding-left: 8px; 
+    text-align: left;
+    width: 100%;
+    transition: color .2s ease;
+    border-radius: 0;
+}
+
+.menu-btn i {
+    font-size: 1.1rem;
+    color: var(--muted, #5f6b7a);
+    margin-right: 8px;
+}
+
+.menu-btn:hover {
+    color: #000;
+    background: transparent;
+    text-decoration: none;
+}
+
+.menu-btn:hover i {
+    color: #000;
+}
+
+/* === Botón Cerrar Sesión === */
+.offcanvas-footer {
+    margin-top: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid var(--border, #e6ecf2);
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 12px;
+}
+
+.btn-logout {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    color: #5f6b7a;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 6px;
+    padding-left: 12px;
+    cursor: pointer;
+    transition: color .2s ease, background .2s ease;
+}
+
+.btn-logout i {
+    font-size: 1.1rem;
+    color: #5f6b7a;
+}
+
+.tn-logout:hover {
+    color: #000;
+    background: transparent;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-logout:hover i {
+    color: #971414;
+}
+
+.btn-logout:hover {
+    color: #971414;
+}

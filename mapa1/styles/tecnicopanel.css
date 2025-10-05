@@ -1,7 +1,7 @@
 /* Sidebar técnico fijo sobre el mapa */
 .tecnico-panel{
     position: absolute;
-    top: calc(var(--nav-h) + 8px);
+    top: calc(var(--nav-h, 56px) + 8px);
     left: 72px;
     right: auto;
     bottom: 72px;
@@ -16,26 +16,25 @@
     z-index: 1030;
 }
 
-.tecnico-content{
+/* Contenido con scroll */
+.tecnico-panel .tecnico-content{
     flex: 1;
     overflow: auto;
     padding: 12px;
 }
 
-.section-title{
-    font-size: .875rem;
+/* Encabezados de sección (unificada) */
+.tecnico-panel .section-title{
+    font-size: .975rem;
     text-transform: uppercase;
     letter-spacing: .4px;
-    color: #6b7280; /* gris */
-    margin: 6px 0 10px;
+    color: #000;
+    margin: 0;
+    margin-left: 18px;
 }
 
-.tecnico-header{
-    padding:10px 12px; border-bottom:1px solid var(--border, #e6ecf2); background:#fff;
-}
-
-/* Encabezado sticky para "Servicio" */
-.section-sticky{
+/* Encabezado sticky para TÉCNICO y SERVICIO (full-bleed alineado al panel) */
+.tecnico-panel .section-sticky {
     position: sticky;
     top: 0;
     z-index: 5;
@@ -46,12 +45,9 @@
     box-shadow: 0 2px 6px rgba(12,18,30,.06);
 }
 
-/* (Opcional) estilo del título de sección si no lo tenías ya */
-.section-title{
-    font-size: .975rem;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-    color: #000000;
-    margin: 0;
-    margin-left: 18px;
+/* Header del panel */
+.tecnico-panel .tecnico-header{
+    padding:10px 12px;
+    border-bottom:1px solid var(--border, #e6ecf2);
+    background:#fff;
 }

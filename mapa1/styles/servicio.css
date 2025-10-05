@@ -1,30 +1,86 @@
-/* ========= PESTALLA SERVICIO ========= */
+/* ===== Tarjeta de Servicio ===== */
 .servicio-card {
-  background: #f9fafb;
   border-radius: 12px;
   padding: 16px 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.servicio-item {
-  border-left: 4px solid #0d6efd; /* Azul Bootstrap */
-  padding-left: 12px;
-}
+.servicio-item { border-left: 4px solid #144998; padding-left: 12px; }
 
 .servicio-label {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6b7280; /* gris */
+  color: #6b7280;
   font-weight: 600;
 }
+.servicio-value { font-size: 1rem; font-weight: 500; color: #111827; margin-top: 2px; }
 
-.servicio-value {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #111827; /* casi negro */
+/* ===== Tarjeta superior: Técnico ===== */
+.tec-info { 
+  padding: 0px; 
+  padding-bottom: 26px; 
+}
+
+.tec-card {
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 12px;
+}
+
+.profile-avatar { 
+  flex: 0 0 48px; 
+}
+
+.tec-name{
+  font-weight: 600;
+  color: #000;
+  font-size: .95rem;
   margin-top: 2px;
+}
+
+.tec-number{
+  font-weight: 500;
+  color: #111827;
+  font-size: .95rem;
+}
+
+/* ===== Input + botón enviar ===== */
+.input-mensaje {
+  flex: 1;
+  background-color: #f0f2f5;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  color: #111827;
+  outline: none;
+  transition: background-color .2s ease;
+}
+
+.input-mensaje::placeholder { 
+  color: #6b7280; 
+}
+
+.input-mensaje:focus { 
+  background-color: #e6e8eb; 
+}
+
+.btn-enviar {
+  background-color: #f0f2f5;
+  border: none;
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease;
+}
+.btn-enviar:hover { background-color: #e6e8eb; color: #000; }
+
+#input-div{
+  padding-left: 15px;
+  padding-right: 10px;
 }

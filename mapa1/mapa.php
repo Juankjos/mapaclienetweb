@@ -52,47 +52,29 @@
             </div>
             <div>
             <div class="fw-semibold">Juan Carlos G. Medina</div>
-            <a href="#" class="link-primary text-decoration-none small">Administrar cuenta</a>
+            <a href="#" id="admin-cuenta" class="link-primary text-decoration-none small">Administrar cuenta</a>
             </div>
         </div>
 
-        <!-- DROPDOWNS COMO ACORDEÓN -->
-        <div class="accordion" id="menuAccordion">
-            <!-- Órdenes de Servicio -->
-            <div class="accordion-item">
-            <h2 class="accordion-header" id="acc-os-h">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#acc-os" aria-expanded="false" aria-controls="acc-os">
+        <!-- NUEVO MENÚ SIMPLE -->
+        <div class="menu-simple d-flex flex-column gap-2 mt-3">
+            <button type="button" class="menu-btn">
+                <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
                 Órdenes de Servicio
-                </button>
-            </h2>
-            <div id="acc-os" class="accordion-collapse collapse" aria-labelledby="acc-os-h" data-bs-parent="#menuAccordion">
-                <div class="accordion-body">
-                <ul class="list-unstyled mb-0">
-                    <li><a href="#" class="link-body-emphasis text-decoration-none">Historial</a></li>
-                </ul>
-                </div>
-            </div>
-            </div>
-
-            <!-- Ayuda -->
-            <div class="accordion-item">
-            <h2 class="accordion-header" id="acc-ayuda-h">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#acc-ayuda" aria-expanded="false" aria-controls="acc-ayuda">
-                Ayuda
-                </button>
-            </h2>
-            <div id="acc-ayuda" class="accordion-collapse collapse" aria-labelledby="acc-ayuda-h" data-bs-parent="#menuAccordion">
-                <div class="accordion-body">
-                <ul class="list-unstyled mb-0">
-                    <li><a href="#" class="link-body-emphasis text-decoration-none">Contacto soporte</a></li>
-                </ul>
-                </div>
-            </div>
-            </div>
-        </div> <!-- /accordion -->
+            </button>
+            <button type="button" class="menu-btn">
+                <i class="bi bi-person-raised-hand me-2"></i>
+                Contacto a Soporte
+            </button>
         </div>
+
+        </div>
+        <div class="offcanvas-footer mt-auto">
+        <button type="button" class="btn-logout">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            Cerrar Sesión
+        </button>
+    </div>
     </div>
 
     <div class="wrap">
@@ -130,12 +112,40 @@
             <h5 class="mb-0">Detalles de tu servicio</h5>
         </div>
 
-        <section aria-labelledby="svc-title">
-        <header class="section-sticky">
-            <h3 id="svc-title" class="section-title mb-1">Servicio</h3>
-        </header>
+        <!-- NUEVO: tarjeta del técnico -->
+        <section aria-labelledby="tec-title" class="tec-info">
+            <header class="section-sticky">
+                <h3 id="tec-title" class="section-title mb-1">Técnico</h3>
+            </header>
 
-        <div class="servicio-card">
+            <div class="tec-card d-flex align-items-center justify-content-between gap-3">
+                <div class="flex-grow-1">
+                <!-- Solo nombre y solo número (opcional: elimina la frase) -->
+                <div id="tec-name" class="tec-name">Salvador Enríque Bustamante</div>
+                <div id="tec-num" class="tec-number">Contáctate al número 378 711 4606</div>
+                </div>
+
+                <div class="rounded-circle bg-light border profile-avatar"
+                    style="width:48px;height:48px; display:flex; align-items:center; justify-content:center;">
+                <i class="bi bi-person fs-4 text-secondary"></i>
+                </div>
+            </div>
+
+            <div class="mt-3 d-flex align-items-center gap-2" id="input-div">
+                <input type="text" class="input-mensaje" placeholder="Envía un mensaje al Técnico">
+                <button type="button" class="btn-enviar">
+                <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Servicio (sticky) -->
+        <section aria-labelledby="svc-title">
+            <header class="section-sticky">
+            <h3 id="svc-title" class="section-title mb-1">Servicio</h3>
+            </header>
+
+            <div class="servicio-card">
             <div class="servicio-item">
                 <div class="servicio-label">Contrato</div>
                 <div class="servicio-value">123123-3</div>
@@ -152,9 +162,8 @@
                 <div class="servicio-label">Dirigiéndose a</div>
                 <div class="servicio-value">C. González Hermosillo 191, San Antonio El Alto, 47640 Tepatitlán de Morelos, Jal.</div>
             </div>
-        </div>
+            </div>
         </section>
-
         </aside>
 
         </div>
