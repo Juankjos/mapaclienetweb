@@ -10,21 +10,14 @@
     <link rel="stylesheet" href="styles/map/root.css" />
     <link rel="stylesheet" href="styles/map/offcanvas.css" />
     <link rel="stylesheet" href="styles/evaluation/starrate.css" />
+    <link rel="stylesheet" href="styles/evaluation/overlay.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <style>
-        /* ========= CENTRADO GLOBAL ========= */
-        main, section#eval, .card-body{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        }
-    </style>
     </head>
+    <div id="overlayListo" class="overlay-listo d-flex align-items-center justify-content-center">
+        <h1 class="text-white display-3 fw-bold">¡Listo!</h1>
+    </div>
     <body>
     <!-- Navbar -->
     <nav class="navbar navbar-light bg-white shadow-sm app-navbar fixed-top" aria-label="Barra de navegación">
@@ -126,5 +119,14 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('btnGuardarComentario').addEventListener('click', () => {
+            const overlay = document.getElementById('overlayListo');
+            overlay.classList.add('show');
+            setTimeout(() => {
+            overlay.style.opacity = 1;
+            }, 50);
+        });
+    </script>
 </body>
 </html>

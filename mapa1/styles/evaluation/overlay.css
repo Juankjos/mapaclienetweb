@@ -1,0 +1,19 @@
+
+/* ===== Overlay de confirmación ===== */
+.overlay-listo {
+    position: fixed;
+    inset: 0;
+    background-color: #144998; /* color sólido, puedes cambiarlo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.8s ease; /* efecto smooth */
+    z-index: 9999; /* encima del navbar y todo */
+    visibility: hidden;
+}
+
+.overlay-listo.show {
+    visibility: visible;
+    opacity: 1;
+}
