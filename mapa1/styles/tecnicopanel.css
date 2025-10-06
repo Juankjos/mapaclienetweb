@@ -21,6 +21,16 @@
     flex: 1;
     overflow: auto;
     padding: 12px;
+    scroll-behavior: smooth;   
+}
+
+.tecnico-panel .tecnico-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tecnico-panel .tecnico-content::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 6px;
 }
 
 /* Encabezados de sección (unificada) */

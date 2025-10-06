@@ -7,5 +7,11 @@
 .nav-tech-icon{ 
   height:44px; 
   width:auto; 
-  display:block; 
+  display:block;
 }
+
+#iconopride{
+  filter: brightness(0%);
+  height: 24px; 
+  display:block;
+} 

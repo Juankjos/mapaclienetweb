@@ -7,8 +7,23 @@
   gap: 16px;
 }
 
-.servicio-item { border-left: 4px solid #144998; padding-left: 12px; }
+/* Cada fila (ícono + texto) */
+.servicio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 15px;
+}
 
+/* Ícono a la izquierda */
+.servicio-icon {
+  font-size: 1.4rem;
+  color: #144998; /* azul acento */
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Texto */
 .servicio-label {
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -16,9 +31,15 @@
   color: #6b7280;
   font-weight: 600;
 }
-.servicio-value { font-size: 1rem; font-weight: 500; color: #111827; margin-top: 2px; }
 
-/* ===== Tarjeta superior: Técnico ===== */
+.servicio-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111827;
+  margin-top: 2px;
+}
+
+/* ===== Tarjeta de Técnico ===== */
 .tec-info { 
   padding: 0px; 
   padding-bottom: 26px; 
@@ -43,7 +64,7 @@
 
 .tec-number{
   font-weight: 500;
-  color: #111827;
+  color: #9599a1;
   font-size: .95rem;
 }
 
@@ -83,4 +104,34 @@
 #input-div{
   padding-left: 15px;
   padding-right: 10px;
+}
+
+/* ====== Tarjeta Hora de llegada ====== */
+.arrival-info {
+  padding-bottom: 20px;
+}
+
+.arrival-card {
+  background: #fff;
+  padding: 16px 20px;
+}
+
+.arrival-estimada {
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.arrival-limite {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.progress {
+  background-color: #e9ecef;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  transition: width 0.6s ease;
 }

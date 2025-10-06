@@ -37,7 +37,8 @@
                     aria-label="Abrir menú">
             <span class="navbar-toggler-icon"></span>
             </button>
-            <img src="icon/icono.png" alt="Icono técnico" class="nav-tech-icon">
+            <img src="icon/icono.png" class="nav-tech-icon">
+            <img src="icon/iconopride.png" id="iconopride">
         </div>
         </div>
     </nav>
@@ -52,7 +53,7 @@
             </div>
             <div>
             <div class="fw-semibold">Juan Carlos G. Medina</div>
-            <a href="#" id="admin-cuenta" class="link-primary text-decoration-none small">Administrar cuenta</a>
+            <a href="#" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
             </div>
         </div>
 
@@ -111,8 +112,31 @@
         <div class="tecnico-header d-flex align-items-center justify-content-between">
             <h5 class="mb-0">Detalles de tu servicio</h5>
         </div>
+        <div class="tecnico-content">
 
-        <!-- NUEVO: tarjeta del técnico -->
+        <section aria-labelledby="arrival-title" class="arrival-info">
+        <header class="section-sticky">
+            <h3 id="arrival-title" class="section-title mb-1">Hora de llegada</h3>
+        </header>
+
+        <div class="arrival-card">
+            <div class="arrival-estimada mb-2">
+            <strong>Llegada estimada:</strong> 2:20 PM
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="progress mb-2" style="height: 8px;">
+            <div class="progress-bar bg-success" role="progressbar"
+                style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+            </div>
+            </div>
+
+            <div class="arrival-limite text-muted">
+            Llegada a más tardar <strong>2:40 PM</strong>
+            </div>
+        </div>
+        </section>
+
         <section aria-labelledby="tec-title" class="tec-info">
             <header class="section-sticky">
                 <h3 id="tec-title" class="section-title mb-1">Técnico</h3>
@@ -146,24 +170,46 @@
             </header>
 
             <div class="servicio-card">
-            <div class="servicio-item">
+            <!-- Contrato -->
+            <div class="servicio-item d-flex align-items-start gap-3">
+                <i class="bi bi-clipboard2-data servicio-icon"></i>
+                <div>
                 <div class="servicio-label">Contrato</div>
                 <div class="servicio-value">123123-3</div>
+                </div>
             </div>
-            <div class="servicio-item">
+
+            <!-- Orden de Servicio -->
+            <div class="servicio-item d-flex align-items-start gap-3">
+                <i class="bi bi-file-earmark-bar-graph-fill servicio-icon"></i>
+                <div>
                 <div class="servicio-label">Orden de Servicio</div>
                 <div class="servicio-value">Cambio de Tecnología</div>
+                </div>
             </div>
-            <div class="servicio-item">
+
+            <!-- Técnico -->
+            <div class="servicio-item d-flex align-items-start gap-3">
+                <i class="bi bi-tools servicio-icon"></i>
+                <div>
                 <div class="servicio-label">Técnico</div>
                 <div class="servicio-value">Salvador Enríque Bustamante</div>
+                </div>
             </div>
-            <div class="servicio-item">
+
+            <!-- Dirigiéndose a -->
+            <div class="servicio-item d-flex align-items-start gap-3">
+                <i class="bi bi-geo-alt servicio-icon"></i>
+                <div>
                 <div class="servicio-label">Dirigiéndose a</div>
-                <div class="servicio-value">C. González Hermosillo 191, San Antonio El Alto, 47640 Tepatitlán de Morelos, Jal.</div>
+                <div class="servicio-value">
+                    C. González Hermosillo 191, San Antonio El Alto, 47640 Tepatitlán de Morelos, Jal.
+                </div>
+                </div>
             </div>
             </div>
         </section>
+        </div>
         </aside>
 
         </div>
