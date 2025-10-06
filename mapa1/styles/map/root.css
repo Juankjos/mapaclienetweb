@@ -147,6 +147,14 @@ body{
   padding-top: var(--nav-h); 
 }
 
+/*SWEET ALERT*/
+.swal2-container {
+    z-index: 200000 !important; /* algo bastante alto */
+}
+.swal2-override-z {
+  z-index: 200000 !important;
+}
+
 @media (max-width: 992px){ 
   .leaflet-top.leaflet-right{ right: 12px; } 
 }

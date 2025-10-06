@@ -1,7 +1,10 @@
 /* ========= CANVAS DERECHO ========= */
 .offcanvas {
     --bs-offcanvas-width: 380px;
-    z-index: 1100;
+    z-index: 1300;
+}
+.offcanvas-backdrop {
+  z-index: 1290; /* un poco por debajo del panel (1300) pero encima del navbar (1200) */
 }
 .offcanvas-toggle-btn {
     position: absolute;
