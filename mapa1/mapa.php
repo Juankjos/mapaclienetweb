@@ -1,3 +1,72 @@
+<?php
+session_start();
+require_once 'db.php';
+
+// Requiere login
+if (empty($_SESSION['contrato'])) {
+  header('Location: login.php');
+  exit;
+}
+$contrato = $_SESSION['contrato'];
+
+// ¿Viene ?reporte= en la URL?
+$reporteId = isset($_GET['reporte']) ? (int)$_GET['reporte'] : 0;
+
+/**
+ * Trae el reporte "En camino":
+ * - Si se pidió un IDReporte específico (y pertenece al contrato y está En camino), lo usa.
+ * - Si no, busca el más reciente En camino del contrato.
+ */
+if ($reporteId > 0) {
+  $sql = "
+    SELECT r.IDReporte, r.IDContrato, r.Problema, r.FechaAgendado,
+           p.IDTec, p.Status,
+           t.NombreTec, t.NumTec,
+           u.Direccion, u.Nombre AS NombreCliente
+    FROM reportes r
+    INNER JOIN usuarios   u ON u.IDContrato = r.IDContrato
+    LEFT  JOIN produccion p ON p.IDReporte  = r.IDReporte AND p.IDContrato = r.IDContrato
+    LEFT  JOIN tecnicos   t ON t.IdTec      = p.IDTec
+    WHERE r.IDReporte = ? AND r.IDContrato = ? AND p.Status = 'En camino'
+    LIMIT 1
+  ";
+  $stmt = $mysqli->prepare($sql);
+  $stmt->bind_param('is', $reporteId, $contrato);
+} else {
+  $sql = "
+    SELECT r.IDReporte, r.IDContrato, r.Problema, r.FechaAgendado,
+           p.IDTec, p.Status,
+           t.NombreTec, t.NumTec,
+           u.Direccion, u.Nombre AS NombreCliente
+    FROM reportes r
+    INNER JOIN usuarios   u ON u.IDContrato = r.IDContrato
+    LEFT  JOIN produccion p ON p.IDReporte  = r.IDReporte AND p.IDContrato = r.IDContrato
+    LEFT  JOIN tecnicos   t ON t.IdTec      = p.IDTec
+    WHERE r.IDContrato = ? AND p.Status = 'En camino'
+    ORDER BY COALESCE(r.FechaAgendado,'1000-01-01') DESC, r.IDReporte DESC
+    LIMIT 1
+  ";
+  $stmt = $mysqli->prepare($sql);
+  $stmt->bind_param('s', $contrato);
+}
+
+$stmt->execute();
+$res = $stmt->get_result();
+$track = $res->fetch_assoc() ?: null;
+$stmt->close();
+
+// Prepara payload para JS
+$payload = [
+  'IDReporte'  => $track['IDReporte'] ?? null,
+  'IDContrato' => $track['IDContrato'] ?? $contrato,
+  'Problema'   => $track['Problema'] ?? null,
+  'NombreTec'  => $track['NombreTec'] ?? null,
+  'NumTec'     => isset($track['NumTec']) ? (string)$track['NumTec'] : null,
+  'Direccion'  => $track['Direccion'] ?? null,
+  'Status'     => $track['Status'] ?? null,
+  'Nombre'     => $_SESSION['nombre'] ?? ($track['NombreCliente'] ?? 'Cliente')
+];
+?>
 <!doctype html>
 <html lang="es">
 <head>
@@ -23,7 +92,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
-    <body>
+<body>
     <!-- NAVBAR SUPERIOR -->
     <nav class="navbar navbar-light bg-white shadow-sm app-navbar fixed-top">
         <div class="container-fluid">
@@ -36,8 +105,8 @@
                     aria-label="Abrir menú">
             <span class="navbar-toggler-icon"></span>
             </button>
-            <img src="icon/icono.png" class="nav-tech-icon">
-            <img src="icon/iconopride.png" id="iconopride">
+            <img src="icon/icono.png" class="nav-tech-icon" alt="Logo">
+            <img src="icon/iconopride.png" id="iconopride" alt="Variación de logo">
         </div>
         </div>
     </nav>
@@ -51,14 +120,14 @@
             <i class="bi bi-person fs-4 text-secondary"></i>
             </div>
             <div>
-            <div class="fw-semibold">Juan Carlos G. Medina</div>
+            <div id="Nombre" class="fw-semibold">Juan Carlos G. Medina</div>
             <a href="#" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
             </div>
         </div>
 
         <!-- NUEVO MENÚ SIMPLE -->
         <div class="menu-simple d-flex flex-column gap-2 mt-3">
-            <button type="button" class="menu-btn">
+            <button type="button" class="menu-btn" onclick="window.location.href='ordenes_servicio.php'">
                 <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
                 Órdenes de Servicio
             </button>
@@ -144,8 +213,8 @@
             <div class="tec-card d-flex align-items-center justify-content-between gap-3">
                 <div class="flex-grow-1">
                 <!-- Solo nombre y solo número (opcional: elimina la frase) -->
-                <div id="tec-name" class="tec-name">Salvador Venegas Plascencia</div>
-                <div id="tec-num" class="tec-number">Contáctate al número 378 711 4606</div>
+                <div id="NombreTec" class="tec-name">Salvador Venegas Plascencia</div>
+                <div id="NumTec" class="tec-number">Contáctate al número 378 711 4606</div>
                 </div>
 
                 <div class="rounded-circle bg-light border profile-avatar"
@@ -174,7 +243,7 @@
                 <i class="bi bi-clipboard2-data servicio-icon"></i>
                 <div>
                 <div class="servicio-label">Contrato</div>
-                <div class="servicio-value">123123-3</div>
+                <div id="IDContrato" class="servicio-value">123123-3</div>
                 </div>
             </div>
 
@@ -183,7 +252,7 @@
                 <i class="bi bi-file-earmark-bar-graph-fill servicio-icon"></i>
                 <div>
                 <div class="servicio-label">Orden de Servicio</div>
-                <div class="servicio-value">Cambio de Tecnología</div>
+                <div id="Problema" class="servicio-value">Cambio de Tecnología</div>
                 </div>
             </div>
 
@@ -192,7 +261,7 @@
                 <i class="bi bi-tools servicio-icon"></i>
                 <div>
                 <div class="servicio-label">Técnico</div>
-                <div class="servicio-value">Salvador Venegas Plascencia</div>
+                <div id="NombreTec" class="servicio-value">Salvador Venegas Plascencia</div>
                 </div>
             </div>
 
@@ -201,7 +270,7 @@
                 <i class="bi bi-geo-alt servicio-icon"></i>
                 <div>
                 <div class="servicio-label">Dirigiéndose a</div>
-                <div class="servicio-value">
+                <div id="Direccion" class="servicio-value">
                     C. González Hermosillo 191, San Antonio El Alto, 47640 Tepatitlán de Morelos, Jal.
                 </div>
                 </div>
@@ -235,6 +304,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="scripts/main.js"></script>
     <script type="importmap">
         {
@@ -244,5 +314,9 @@
         }
     </script>
     <script type="module" src="scripts/ui/car-overlay.js"></script>
-    </body>
+    <script type="module" src="scripts/api/mapacliente.js"></script>
+    <script>
+        window.__TRACK__ = <?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+    </script>
+</body>
 </html>

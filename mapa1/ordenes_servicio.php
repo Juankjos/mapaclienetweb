@@ -93,7 +93,7 @@ $nombreSesion = !empty($_SESSION['nombre']) ? $_SESSION['nombre'] : ($rows[0]['N
 
         <!-- Menú -->
         <div class="menu-simple d-flex flex-column gap-2 mt-3">
-            <button type="button" class="menu-btn">
+            <button type="button" class="menu-btn" onclick="window.location.href='ordenes_servicio.php'">
             <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
             Órdenes de Servicio
             </button>

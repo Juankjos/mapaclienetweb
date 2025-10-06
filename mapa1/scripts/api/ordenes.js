@@ -178,3 +178,12 @@ function starRow(rate){
         });
     });
 })();
+
+//Redirigir a Ordenes de Servicio
+document.querySelectorAll('.menu-btn').forEach(btn => {
+    if (btn.textContent.includes('Órdenes de Servicio')) {
+        btn.addEventListener('click', () => {
+            window.location.href = 'ordenes_servicio.php';
+        });
+    }
+});
