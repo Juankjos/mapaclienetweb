@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <h5 class="mb-3 fw-bold text-dark">¿Cómo fue tu experiencia con Servando?</h5>
+            <h5 class="mb-3 fw-bold text-dark">¿Cómo fue tu experiencia con Salvador?</h5>
 
             <!-- Rating: 5 estrellas -->
             <fieldset class="rating-stars mb-3" aria-labelledby="rating-label" role="radiogroup">

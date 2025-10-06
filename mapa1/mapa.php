@@ -144,7 +144,7 @@
             <div class="tec-card d-flex align-items-center justify-content-between gap-3">
                 <div class="flex-grow-1">
                 <!-- Solo nombre y solo número (opcional: elimina la frase) -->
-                <div id="tec-name" class="tec-name">Salvador Enríque Bustamante</div>
+                <div id="tec-name" class="tec-name">Salvador Venegas Plascencia</div>
                 <div id="tec-num" class="tec-number">Contáctate al número 378 711 4606</div>
                 </div>
 
@@ -192,7 +192,7 @@
                 <i class="bi bi-tools servicio-icon"></i>
                 <div>
                 <div class="servicio-label">Técnico</div>
-                <div class="servicio-value">Salvador Enríque Bustamante</div>
+                <div class="servicio-value">Salvador Venegas Plascencia</div>
                 </div>
             </div>
 
