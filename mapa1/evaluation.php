@@ -15,10 +15,15 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     </head>
-    <div id="overlayListo" class="overlay-listo d-flex align-items-center justify-content-center">
-        <h1 class="text-white display-3 fw-bold">¡Listo!</h1>
-    </div>
     <body>
+        <div id="overlayListo" class="overlay-listo" aria-hidden="true">
+            <canvas id="confettiCanvas" class="overlay-canvas" aria-hidden="true"></canvas>
+            <div class="overlay-content d-flex flex-column align-items-center justify-content-center text-center">
+                <h1 class="text-white display-3 fw-bold mb-3">¡Listo!</h1>
+                <p class="text-white fs-5 mb-1">Tus comentarios han sido enviados.</p>
+                <p class="text-white fs-2">¡Fue un placer atenderte!</p>
+            </div>
+        </div>
     <!-- Navbar -->
     <nav class="navbar navbar-light bg-white shadow-sm app-navbar fixed-top" aria-label="Barra de navegación">
         <div class="container-fluid">
@@ -119,14 +124,59 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script>
-        document.getElementById('btnGuardarComentario').addEventListener('click', () => {
+        (function () {
+            const btn = document.getElementById('btnGuardarComentario');
             const overlay = document.getElementById('overlayListo');
+            const canvas = document.getElementById('confettiCanvas');
+
+            if (!btn || !overlay || !canvas) return;
+
+            // Crea una instancia ligada al canvas del overlay
+            let confettiOverlay = null;
+            function getConfettiInstance(){
+            if (!confettiOverlay && window.confetti) {
+                confettiOverlay = confetti.create(canvas, {
+                resize: true,      // se ajusta al tamaño del overlay
+                useWorker: true
+                });
+            }
+            return confettiOverlay;
+            }
+
+            btn.addEventListener('click', () => {
             overlay.classList.add('show');
-            setTimeout(() => {
-            overlay.style.opacity = 1;
-            }, 50);
-        });
+            overlay.setAttribute('aria-hidden', 'false');
+
+            // Lanza el confeti cuando el overlay ya empezó a mostrarse
+            requestAnimationFrame(() => {
+                setTimeout(() => lanzarConfeti(), 300);
+            });
+            });
+
+            function lanzarConfeti() {
+            const c = getConfettiInstance();
+            if (!c) return;
+
+            const duration = 400;                 // 2s
+            const end = Date.now() + duration;
+
+            // ráfagas continuas durante "duration"
+            (function frame() {
+                c({
+                particleCount: 10,
+                startVelocity: 45,
+                spread: 360,
+                ticks: 80,
+                scalar: 1,
+                origin: { x: Math.random(), y: Math.random() * 0.6 } // más visible en el overlay
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            })();
+            }
+        })();
     </script>
 </body>
 </html>
