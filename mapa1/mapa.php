@@ -9,17 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="styles/root.css" />
-    <link rel="stylesheet" href="styles/ui.css" />
-    <link rel="stylesheet" href="styles/modal.css" />
-    <link rel="stylesheet" href="styles/mapa.css" />
-    <link rel="stylesheet" href="styles/starrate.css" />
-    <link rel="stylesheet" href="styles/offcanvas.css" />
-    <link rel="stylesheet" href="styles/servicio.css" />
-    <link rel="stylesheet" href="styles/leafpopup.css" />
-    <link rel="stylesheet" href="styles/navbar.css" />
-    <link rel="stylesheet" href="styles/tecnico.css" />
-    <link rel="stylesheet" href="styles/tecnicopanel.css" />
+    <link rel="stylesheet" href="styles/map/root.css" />
+    <link rel="stylesheet" href="styles/map/ui.css" />
+    <link rel="stylesheet" href="styles/map/modal.css" />
+    <link rel="stylesheet" href="styles/map/mapa.css" />
+    <link rel="stylesheet" href="styles/map/offcanvas.css" />
+    <link rel="stylesheet" href="styles/map/servicio.css" />
+    <link rel="stylesheet" href="styles/map/leafpopup.css" />
+    <link rel="stylesheet" href="styles/map/navbar.css" />
+    <link rel="stylesheet" href="styles/map/tecnico.css" />
+    <link rel="stylesheet" href="styles/map/tecnicopanel.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
