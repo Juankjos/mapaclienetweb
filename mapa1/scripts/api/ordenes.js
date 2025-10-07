@@ -128,7 +128,6 @@ function formatDireccion(raw) {
         }
         return arr;
     }
-
     function render(){
         const filtered = applyFilters();
         const total = filtered.length;
@@ -139,47 +138,81 @@ function formatDireccion(raw) {
         const slice = filtered.slice(start, start + state.pageSize);
 
         elCards.innerHTML = slice.map(item => {
-        const titulo = esc(item.Problema) || 'Sin descripción del problema';
-        const tecnico = item.NombreTec || (item.IDTec ? `Técnico #${item.IDTec}` : 'Sin asignar');
-        const direccion = formatDireccion(item.Direccion); // <-- USO DEL HELPER
-        const fecha = fmtFechaLargaEsMX(item.FechaAgendado);
-        const status = esc(item.Status) || 'Sin estado';
-        const rate = starRow(item.Rate);
+            const titulo = esc(item.Problema) || 'Sin descripción del problema';
+            const tecnico = item.NombreTec || (item.IDTec ? `Técnico #${item.IDTec}` : 'Sin asignar');
+            const direccion = formatDireccion(item.Direccion);
+            const fecha = fmtFechaLargaEsMX(item.FechaAgendado);
+            const status      = esc(item.Status) || 'Sin estado';
+            const numericRate = Number(item.Rate || 0);       // ← numérico
+            const rateStars   = starRow(numericRate);  
 
-        return `
-            <article class="order-card p-3">
-            <div class="row g-3">
-                <div class="col-12 col-sm-auto">
-                <img src="images/tecnico.png" class="image-thumb rounded" alt="Técnico">
-                </div>
-                <div class="col">
-                <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
-                    <div>
-                        <h2 class="h5 mb-1 text-dark fw-semibold">${titulo}</h2>
-                        <div class="small text-muted">Reporte #${item.IDReporte} · <span class="badge text-bg-secondary">${status}</span></div>
-                        <div class="rating mt-1">${rate}</div>
+            // Mostrar botón de evaluación SOLO si Completado/Cancelado y Rate = 0
+            const canEval = (status === 'Completado' || status === 'Cancelado') && numericRate === 0;
+            const evalBtn = canEval
+            ? `<div class="mt-3">
+                <a class="btn btn-outline-primary btn-sm"
+                    href="evaluation.php?reporte=${encodeURIComponent(item.IDReporte)}">
+                    Califica a tu técnico
+                </a>
+                </div>`
+            : '';
+            // Color del badge según estado
+            let badgeClass = 'text-bg-secondary';
+            let borderColor = '#ccc';
+            switch (status) {
+                case 'En camino':
+                    badgeClass = 'text-bg-primary';
+                    borderColor = '#0d6efd'; // Azul
+                    break;
+                case 'Completado':
+                    badgeClass = 'text-bg-success';
+                    borderColor = '#198754'; // Verde
+                    break;
+                case 'Cancelado':
+                    badgeClass = 'text-bg-danger';
+                    borderColor = '#dc3545'; // Rojo
+                    break;
+            }
+
+            const textoAtencion = (status === 'En camino') ? 'Lo atiende:' : 'Lo atendió:';
+
+            return `
+            <article class="order-card p-3" style="border-left: 6px solid ${borderColor};">
+                <div class="row g-3">
+                    <div class="col-12 col-sm-auto">
+                        <img src="images/tecnico.png" class="image-thumb rounded" alt="Técnico">
                     </div>
-                    </div>
-                    <div class="item-row mt-2">
-                    <div class="d-flex align-items-start flex-wrap info-group">
-                        <div class="info-block">
-                        <div class="small text-muted">Lo atendió:</div>
-                        <div class="fw-semibold">${tecnico}</div>
+                    <div class="col">
+                        <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+                            <div>
+                                <h2 class="h5 mb-1 text-dark fw-semibold">${titulo}</h2>
+                                <div class="small text-muted">
+                                    Reporte #${item.IDReporte} · 
+                                    <span class="badge ${badgeClass}">${status}</span>
+                                </div>
+                                <div class="rating mt-1">${rateStars}</div>
+                            </div>
                         </div>
-                        <div class="info-block">
-                        <div class="small text-muted">En el domicilio:</div>
-                        <div class="fw-semibold">${direccion}</div>
-                    </div>
-                    <div class="info-block">
-                        <div class="small text-muted">El día:</div>
-                        <div class="fw-semibold">${fecha}</div>
-                    </div>
+                        <div class="item-row mt-2">
+                            <div class="d-flex align-items-start flex-wrap info-group">
+                                <div class="info-block">
+                                    <div class="small text-muted">${textoAtencion}</div>
+                                    <div class="fw-semibold">${tecnico}</div>
+                                </div>
+                                <div class="info-block">
+                                    <div class="small text-muted">En el domicilio:</div>
+                                    <div class="fw-semibold">${direccion}</div>
+                                </div>
+                                <div class="info-block">
+                                    <div class="small text-muted">El día:</div>
+                                    <div class="fw-semibold">${fecha}</div>
+                                </div>
+                            </div>
+                        </div>
+                        ${evalBtn}
                     </div>
                 </div>
-                </div>
-            </div>
-            </article>
-        `;
+            </article>`;
         }).join('');
 
         elInfo.textContent = `${total} resultado${total===1?'':'s'} · página ${state.page} de ${pages}`;

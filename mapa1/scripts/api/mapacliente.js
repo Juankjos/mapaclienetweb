@@ -15,9 +15,18 @@ function setAllById(id, text) {
         return;
     }
 
+    function formatPhone(num) {
+        if (!num) return '';
+        const digits = String(num).replace(/\D+/g, ''); // elimina cualquier carácter no numérico
+        const m = digits.match(/^(\d{3})(\d{3})(\d+)$/);
+        if (!m) return num; // si no cumple el patrón, deja igual
+        return `${m[1]} ${m[2]} ${m[3]}`;
+    }
+
+    const telFormatted = d.NumTec ? formatPhone(d.NumTec) : null;
     // Rellenar campos solicitados
     setAllById('NombreTec', d.NombreTec || 'Técnico sin asignar');
-    setAllById('NumTec',    d.NumTec ? `Contáctate al número ${d.NumTec}` : 'Número no disponible');
+    setAllById('NumTec', telFormatted ? `Contáctate al número ${telFormatted}` : 'Número no disponible');
     setAllById('IDContrato', d.IDContrato || '');
     setAllById('Problema',   d.Problema || 'Sin descripción del problema');
     setAllById('Direccion',  formatDireccion(d.Direccion));

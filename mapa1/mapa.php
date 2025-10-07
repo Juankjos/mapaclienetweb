@@ -1,70 +1,33 @@
 <?php
 session_start();
 require_once 'db.php';
+require_once 'auth.php';
 
 // Requiere login
 if (empty($_SESSION['contrato'])) {
-  header('Location: login.php');
-  exit;
+    header('Location: login.php'); exit;
 }
-$contrato = $_SESSION['contrato'];
-
-// ¿Viene ?reporte= en la URL?
+$contrato  = $_SESSION['contrato'];
 $reporteId = isset($_GET['reporte']) ? (int)$_GET['reporte'] : 0;
 
-/**
- * Trae el reporte "En camino":
- * - Si se pidió un IDReporte específico (y pertenece al contrato y está En camino), lo usa.
- * - Si no, busca el más reciente En camino del contrato.
- */
-if ($reporteId > 0) {
-  $sql = "
-    SELECT r.IDReporte, r.IDContrato, r.Problema, r.FechaAgendado,
-           p.IDTec, p.Status,
-           t.NombreTec, t.NumTec,
-           u.Direccion, u.Nombre AS NombreCliente
-    FROM reportes r
-    INNER JOIN usuarios   u ON u.IDContrato = r.IDContrato
-    LEFT  JOIN produccion p ON p.IDReporte  = r.IDReporte AND p.IDContrato = r.IDContrato
-    LEFT  JOIN tecnicos   t ON t.IdTec      = p.IDTec
-    WHERE r.IDReporte = ? AND r.IDContrato = ? AND p.Status = 'En camino'
-    LIMIT 1
-  ";
-  $stmt = $mysqli->prepare($sql);
-  $stmt->bind_param('is', $reporteId, $contrato);
-} else {
-  $sql = "
-    SELECT r.IDReporte, r.IDContrato, r.Problema, r.FechaAgendado,
-           p.IDTec, p.Status,
-           t.NombreTec, t.NumTec,
-           u.Direccion, u.Nombre AS NombreCliente
-    FROM reportes r
-    INNER JOIN usuarios   u ON u.IDContrato = r.IDContrato
-    LEFT  JOIN produccion p ON p.IDReporte  = r.IDReporte AND p.IDContrato = r.IDContrato
-    LEFT  JOIN tecnicos   t ON t.IdTec      = p.IDTec
-    WHERE r.IDContrato = ? AND p.Status = 'En camino'
-    ORDER BY COALESCE(r.FechaAgendado,'1000-01-01') DESC, r.IDReporte DESC
-    LIMIT 1
-  ";
-  $stmt = $mysqli->prepare($sql);
-  $stmt->bind_param('s', $contrato);
+// Gate: En camino O Completado sin calificación
+$track = can_view_map($mysqli, $contrato, $reporteId);
+if ($track === false) {
+    $_SESSION['flash_error'] = 'No tienes una orden activa para ver el mapa.';
+    header('Location: ordenes_servicio.php'); exit;
 }
 
-$stmt->execute();
-$res = $stmt->get_result();
-$track = $res->fetch_assoc() ?: null;
-$stmt->close();
-
-// Prepara payload para JS
+// Payload para JS (incluye Rate)
 $payload = [
-  'IDReporte'  => $track['IDReporte'] ?? null,
-  'IDContrato' => $track['IDContrato'] ?? $contrato,
-  'Problema'   => $track['Problema'] ?? null,
-  'NombreTec'  => $track['NombreTec'] ?? null,
-  'NumTec'     => isset($track['NumTec']) ? (string)$track['NumTec'] : null,
-  'Direccion'  => $track['Direccion'] ?? null,
-  'Status'     => $track['Status'] ?? null,
-  'Nombre'     => $_SESSION['nombre'] ?? ($track['NombreCliente'] ?? 'Cliente')
+    'IDReporte'  => $track['IDReporte'],
+    'IDContrato' => $track['IDContrato'],
+    'Problema'   => $track['Problema'],
+    'NombreTec'  => $track['NombreTec'],
+    'NumTec'     => isset($track['NumTec']) ? (string)$track['NumTec'] : null,
+    'Direccion'  => $track['Direccion'],
+    'Status'     => $track['Status'],
+    'Rate'       => isset($track['Rate']) ? (int)$track['Rate'] : 0,
+    'Nombre'     => $_SESSION['nombre'] ?? ($track['NombreCliente'] ?? 'Cliente')
 ];
 ?>
 <!doctype html>
@@ -300,6 +263,25 @@ $payload = [
         </div>
     </div>
 
+    <!-- Modal evaluación al concluir -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true" aria-labelledby="ratingModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 id="ratingModalLabel" class="modal-title">¡Tu orden ha concluido!</h5>
+        </div>
+        <div class="modal-body">
+            Califica a nuestro técnico y cuéntanos de tu experiencia.
+        </div>
+        <div class="modal-footer">
+            <a class="btn btn-primary" id="goEval" href="http://127.0.0.1/mapaclienteweb/mapa1/evaluation.php">Calificar ahora</a>
+            <!-- Cambia este botón por un <a> o dale onclick -->
+            <a class="btn btn-secondary" href="ordenes_servicio.php">Más tarde</a>
+        </div>
+        </div>
+    </div>
+    </div>
+
     <!-- SCRIPTS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -319,6 +301,21 @@ $payload = [
     <script type="module" src="scripts/api/mapacliente.js"></script>
     <script>
         window.__TRACK__ = <?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+    </script>
+    <script>
+        // Mostrar modal si está Completado y sin calificación
+        document.addEventListener('DOMContentLoaded', () => {
+            const d = window.__TRACK__ || {};
+            const mustAskRating = (d.Status === 'Completado') && (Number(d.Rate || 0) === 0);
+
+            if (mustAskRating) {
+            const modalEl = document.getElementById('ratingModal');
+            if (modalEl && window.bootstrap && bootstrap.Modal) {
+                const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+                modal.show();
+            }
+            }
+        });
     </script>
 </body>
 </html>
