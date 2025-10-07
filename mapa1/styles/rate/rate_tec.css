@@ -1,0 +1,39 @@
+.avatar { 
+    width:48px;
+    height:48px; 
+    object-fit:cover;
+    border-radius:50%; 
+    border:1px solid #e5e5e5; 
+}
+
+.rate-badge { 
+    font-variant-numeric: tabular-nums;
+}
+
+.star i { 
+    font-size: 1.1rem; 
+    vertical-align: -2px;
+}
+
+.table > :not(caption) > * > * { 
+    vertical-align: middle; 
+}
+
+.search-input { 
+    max-width: 320px; 
+}
+
+/* Centrar y ajustar tamaño de los totales */
+.total-cell {
+    text-align:center; 
+    vertical-align:middle;
+}
+
+.total-number {
+    font-size: 1.1rem; 
+    font-weight: 600; 
+    line-height: 1; 
+    display: inline-block;
+}
+
+
