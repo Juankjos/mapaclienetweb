@@ -139,11 +139,13 @@ $payload = [
 
         </div>
         <div class="offcanvas-footer mt-auto">
-        <button type="button" class="btn-logout">
-            <i class="bi bi-box-arrow-right me-2"></i>
-            Cerrar Sesión
-        </button>
-    </div>
+            <form id="logoutForm" action="logout.php" method="post">
+                <button id="btnLogout" type="button" class="btn-logout">
+                <i class="bi bi-box-arrow-right me-2"></i>
+                Cerrar Sesión
+                </button>
+            </form>
+        </div>
     </div>
 
     <div class="wrap">
@@ -304,7 +306,6 @@ $payload = [
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="scripts/main.js"></script>
     <script type="importmap">
         {
@@ -314,6 +315,7 @@ $payload = [
         }
     </script>
     <script type="module" src="scripts/ui/car-overlay.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="scripts/api/mapacliente.js"></script>
     <script>
         window.__TRACK__ = <?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
