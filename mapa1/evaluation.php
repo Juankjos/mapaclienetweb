@@ -131,7 +131,7 @@ if ($reporteId > 0) {
             </div>
             <div>
             <div class="fw-semibold" id="Nombre"><?= htmlspecialchars($payload['Nombre'], ENT_QUOTES, 'UTF-8') ?></div>
-            <a href="#" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
+            <a href="administrar_cuenta.php" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
             </div>
         </div>
 

@@ -87,7 +87,7 @@ $nombreSesion = !empty($_SESSION['nombre']) ? $_SESSION['nombre'] : ($rows[0]['N
             </div>
             <div>
             <div id="Nombre" class="fw-semibold">...</div>
-            <a href="#" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
+            <a href="administrar_cuenta.php" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
             </div>
         </div>
 
