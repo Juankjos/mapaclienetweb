@@ -13,25 +13,26 @@ $sql = "
         t.NombreTec,
         t.NumTec,
 
-        /* Reportes Totales (todos los reportes anexados al técnico) */
-        (SELECT COUNT(*) 
-            FROM produccion p_all 
+        /* Reportes Totales: solo Completado o Cancelado */
+        (SELECT COUNT(*)
+            FROM produccion p_all
             WHERE p_all.IDTec = t.IdTec
+            AND p_all.Status IN ('Completado','Cancelado')
         ) AS total_reportes,
 
-        /* Conteo de ratings válidos (1–5) en Completado/Cancelado */
-        (SELECT COUNT(*) 
+        /* Conteo de ratings válidos (1–5) SOLO Completado */
+        (SELECT COUNT(*)
             FROM produccion p_cnt
             WHERE p_cnt.IDTec = t.IdTec
-            AND p_cnt.Status IN ('Completado','Cancelado')
+            AND p_cnt.Status = 'Completado'
             AND p_cnt.Rate BETWEEN 1 AND 5
         ) AS total_ratings,
 
-        /* Promedio de calificación */
+        /* Promedio de calificación SOLO Completado */
         (SELECT AVG(NULLIF(p_avg.Rate, 0))
             FROM produccion p_avg
             WHERE p_avg.IDTec = t.IdTec
-            AND p_avg.Status IN ('Completado','Cancelado')
+            AND p_avg.Status = 'Completado'
             AND p_avg.Rate BETWEEN 1 AND 5
         ) AS avg_rate
 
@@ -40,13 +41,13 @@ $sql = "
         ( (SELECT AVG(NULLIF(p_avg2.Rate, 0))
             FROM produccion p_avg2
             WHERE p_avg2.IDTec = t.IdTec
-            AND p_avg2.Status IN ('Completado','Cancelado')
+            AND p_avg2.Status = 'Completado'
             AND p_avg2.Rate BETWEEN 1 AND 5
         ) IS NULL ),
         (SELECT AVG(NULLIF(p_avg3.Rate, 0))
             FROM produccion p_avg3
             WHERE p_avg3.IDTec = t.IdTec
-            AND p_avg3.Status IN ('Completado','Cancelado')
+            AND p_avg3.Status = 'Completado'
             AND p_avg3.Rate BETWEEN 1 AND 5
         ) DESC,
         t.NombreTec ASC
@@ -118,8 +119,10 @@ $tecnicos = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
     <main class="container py-4" style="margin-top:72px;">
     <section aria-labelledby="rate-title">
         <div class="d-flex align-items-center justify-content-between mb-3">
-        <h5 id="rate-title" class="mb-0">Técnicos</h5>
-        <input id="filtrar" type="search" class="form-control form-control-sm search-input" placeholder="Buscar técnico...">
+            <h5 id="rate-title" class="mb-0">Técnicos</h5>
+            <div class="col-6 col-md-3">
+                <input id="filtrar" type="search" class="form-control form-control-sm search-input" placeholder="Buscar por Nombre, ID o teléfono...">
+            </div>
         </div>
 
         <div class="table-responsive">

@@ -192,7 +192,7 @@ function activeBtn($cur, $want){
             <div class="d-flex align-items-center gap-3 mb-3">
                 <h5 id="c-title" class="mb-0"><?= esc($tec['NombreTec'] ?: 'Técnico') ?></h5>
                 <div class="text-body-secondary small">
-                    ID: <?= (int)$tec['IdTec'] ?><?= $tec['NumTec'] ? ' · #'.esc($tec['NumTec']) : '' ?>
+                    ID: <?= (int)$tec['IdTec'] ?><?= $tec['NumTec'] ? ' · Teléfono: '.esc($tec['NumTec']) : '' ?>
                 </div>
             </div>
 
