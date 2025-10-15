@@ -1,0 +1,84 @@
+
+.page-wrap{
+    max-width: 760px; 
+    margin: 0 auto; 
+}
+
+#btn-volver{
+    background-color: #f8f9fa;
+    color: rgb(80, 78, 78);
+}
+
+#btn-volver:hover{
+    color: #f8f9fa;
+    background-color: #0d6efd;
+}
+
+.section{ 
+    padding: 18px 0; 
+    border-bottom: 1px solid var(--bs-border-color); 
+}
+
+.section:last-child{ 
+    border-bottom: 0; 
+}
+.section-title{ 
+    margin: 0 0 .25rem 0; 
+    font-weight: 600; 
+}
+
+.readonly-box{ 
+    background:#f8f9fa; 
+    border:1px solid var(--bs-border-color); 
+    border-radius:.375rem; 
+    padding:.625rem .75rem; 
+}
+
+.toggle-line{ 
+    display:flex; 
+    align-items:center; 
+    justify-content:space-between; 
+    gap:1rem; 
+}
+
+.toggle-line .form-check{ 
+    margin:0; 
+}
+
+.form-check input{ 
+    cursor: pointer;
+}
+
+#btn-guardar{
+    background-color: #0d6efd;
+}
+
+#btn-guardar:hover{
+    background-color: #0a58ca;
+}
+
+/* Acciones con transición suave */
+.field-actions{
+    display:flex; gap:.5rem;
+    overflow:hidden;
+    max-height:0; opacity:0; transform:translateY(-6px);
+    transition: max-height .35s ease, opacity .25s ease, transform .25s ease;
+}
+
+.field-actions.show{ 
+    max-height:64px; 
+    opacity:1; 
+    transform:translateY(0); 
+}
+
+.actions .btn{ 
+    min-width: 140px; 
+}
+
+.form-control[disabled]{ 
+    background:#f8f9fa; 
+}
+
+main{ 
+    margin-top:84px;
+}

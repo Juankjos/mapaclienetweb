@@ -119,7 +119,7 @@ $tecnicos = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
     <main class="container py-4" style="margin-top:72px;">
     <section aria-labelledby="rate-title">
         <div class="d-flex align-items-center justify-content-between mb-3">
-            <h5 id="rate-title" class="mb-0">Técnicos</h5>
+            <h4 id="rate-title" class="mb-0">Técnicos</h4>
             <div class="col-6 col-md-3">
                 <input id="filtrar" type="search" class="form-control form-control-sm search-input" placeholder="Buscar por Nombre, ID o teléfono...">
             </div>
