@@ -30,6 +30,7 @@ INNER JOIN usuarios   u ON u.IDContrato = r.IDContrato
 LEFT  JOIN produccion p ON p.IDReporte  = r.IDReporte AND p.IDContrato = r.IDContrato
 LEFT  JOIN tecnicos   t ON t.IdTec      = p.IDTec
 WHERE r.IDContrato = ?
+    AND p.Status IN ('En camino','Completado','Cancelado')
 ORDER BY COALESCE(r.FechaAgendado, '1000-01-01') DESC, r.IDReporte DESC
 ";
 $stmt = $mysqli->prepare($sql);

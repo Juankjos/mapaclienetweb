@@ -44,6 +44,30 @@
     color: #ffffff
 }
 
+#btn-register-tec{
+    color: #0d6efd
+}
+
+#btn-register-tec:hover{
+    color: #ffffff
+}
+
+#btnSelect{
+    color: #0d6efd
+}
+
+#btnSelect:hover{
+    color: #ffffff
+}
+
+#btnGuardar{
+    color: #0d6efd
+}
+
+#btnGuardar:hover{
+    color: #ffffff
+}
+
 .table-scroll {
     max-height: 70vh;
     overflow: auto;

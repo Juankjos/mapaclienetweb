@@ -120,8 +120,14 @@ $tecnicos = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
     <section aria-labelledby="rate-title">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h4 id="rate-title" class="mb-0">Técnicos</h4>
-            <div class="col-6 col-md-3">
-                <input id="filtrar" type="search" class="form-control form-control-sm search-input" placeholder="Buscar por Nombre, ID o teléfono...">
+
+            <div class="d-flex gap-2 align-items-center">
+                <div class="col-12 col-md-8">
+                    <input id="filtrar" type="search" class="form-control form-control-sm search-input" placeholder="Buscar por Nombre, ID o teléfono...">
+                </div>
+                <a id="btn-register-tec" class="btn btn-sm btn-primary" href="registro_tecnico.php">
+                    <i class="bi bi-person-plus me-1"></i> Registro de técnico
+                </a>
             </div>
         </div>
 

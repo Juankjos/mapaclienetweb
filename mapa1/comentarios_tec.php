@@ -110,7 +110,16 @@ $rows = $st->get_result()->fetch_all(MYSQLI_ASSOC);
 $st->close();
 
 function esc($v){ return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
-function fmtFecha($dt){ return $dt ? date('Y-m-d H:i', strtotime($dt)) : '-'; }
+function fmtFecha($dt){
+    if (!$dt) return '-';
+    $ts = strtotime($dt);
+    static $mes = ['ENE','FEB','MAR','ABRI','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+    $d  = date('d', $ts);
+    $m  = $mes[(int)date('n', $ts)-1];
+    $y  = date('Y', $ts);
+    $hm = date('H:i', $ts);
+    return "$d $m $y · $hm";
+}
 
 // Helpers UI: estado activo de botones
 function activeBtn($cur, $want){
@@ -216,7 +225,7 @@ function activeBtn($cur, $want){
                             $badge    = $isCancel
                                 ? '<span class="badge bg-danger-subtle text-danger-emphasis badge-state">Cancelado</span>'
                                 : '<span class="badge bg-success-subtle text-success-emphasis badge-state">Completado</span>';
-                            $comentTec = trim((string)$r['MotivoTecnico']) !== '' ? $r['MotivoTecnico'] : '-';
+                            $comentTec = trim((string)$r['MotivoTecnico']) !== '' ? $r['MotivoTecnico'] : '';
                         ?>
                             <tr class="<?= $trClass ?>">
                                 <td class="nowrap"><?= esc(fmtFecha($r['Fecha'])) ?></td>
