@@ -142,114 +142,112 @@ $payload = [
 
         <!-- SIDEBAR TÉCNICO FIJO (ya no offcanvas) -->
         <aside id="panelTecnico" class="tecnico-panel">
-        <div class="tecnico-header d-flex align-items-center justify-content-between">
-            <h5 class="mb-0">Detalles de tu servicio</h5>
-        </div>
-        <div class="tecnico-content">
-
-        <section aria-labelledby="arrival-title" class="arrival-info">
-        <header class="section-sticky">
-            <h3 id="arrival-title" class="section-title mb-1">Hora de llegada</h3>
-        </header>
-
-        <div class="arrival-card">
-            <div class="arrival-estimada mb-2">
-            <strong>Llegada estimada:</strong> 2:20 PM
+            <div class="tecnico-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">Detalles de tu servicio</h5>
             </div>
+            <div class="tecnico-content">
 
-            <!-- Barra de progreso -->
-            <div class="progress mb-2" style="height: 8px;">
-            <div class="progress-bar bg-success" role="progressbar"
-                style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-            </div>
-            </div>
-
-            <div class="arrival-limite text-muted">
-            Llegada a más tardar <strong>2:40 PM</strong>
-            </div>
-        </div>
-        </section>
-
-        <section aria-labelledby="tec-title" class="tec-info">
+            <section aria-labelledby="arrival-title" class="arrival-info">
             <header class="section-sticky">
-                <h3 id="tec-title" class="section-title mb-1">Técnico</h3>
+                <h3 id="arrival-title" class="section-title mb-1">Hora de llegada</h3>
             </header>
 
-            <div class="tec-card d-flex align-items-center justify-content-between gap-3">
-                <div class="flex-grow-1">
-                <!-- Solo nombre y solo número (opcional: elimina la frase) -->
-                <div id="NombreTec" class="tec-name">Salvador Venegas Plascencia</div>
-                <div id="NumTec" class="tec-number">Contáctate al número 378 711 4606</div>
+            <div class="arrival-card">
+                <div class="arrival-estimada mb-2">
+                <strong>Llegada estimada:</strong> 2:20 PM
                 </div>
 
-                <div class="rounded-circle bg-light border profile-avatar"
-                    style="width:48px;height:48px; display:flex; align-items:center; justify-content:center;">
-                <i class="bi bi-person fs-4 text-secondary"></i>
-                </div>
-            </div>
-
-            <div class="mt-3 d-flex align-items-center gap-2" id="input-div">
-                <input type="text" class="input-mensaje" placeholder="Envía un mensaje al Técnico">
-                <button type="button" class="btn-enviar">
-                <i class="bi bi-send-fill"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- Servicio (sticky) -->
-        <section aria-labelledby="svc-title">
-            <header class="section-sticky">
-            <h3 id="svc-title" class="section-title mb-1">Servicio</h3>
-            </header>
-
-            <div class="servicio-card">
-            <!-- Contrato -->
-            <div class="servicio-item d-flex align-items-start gap-3">
-                <i class="bi bi-clipboard2-data servicio-icon"></i>
-                <div>
-                <div class="servicio-label">Contrato</div>
-                <div id="IDContrato" class="servicio-value">123123-3</div>
-                </div>
-            </div>
-
-            <!-- Orden de Servicio -->
-            <div class="servicio-item d-flex align-items-start gap-3">
-                <i class="bi bi-file-earmark-bar-graph-fill servicio-icon"></i>
-                <div>
-                <div class="servicio-label">Orden de Servicio</div>
-                <div id="Problema" class="servicio-value">Cambio de Tecnología</div>
-                </div>
-            </div>
-
-            <!-- Técnico -->
-            <div class="servicio-item d-flex align-items-start gap-3">
-                <i class="bi bi-tools servicio-icon"></i>
-                <div>
-                <div class="servicio-label">Técnico</div>
-                <div id="NombreTec" class="servicio-value">Salvador Venegas Plascencia</div>
-                </div>
-            </div>
-
-            <!-- Dirigiéndose a -->
-            <div class="servicio-item d-flex align-items-start gap-3">
-                <i class="bi bi-geo-alt servicio-icon"></i>
-                <div>
-                <div class="servicio-label">Dirigiéndose a</div>
-                <div id="Direccion" class="servicio-value">
-                    C. González Hermosillo 191, San Antonio El Alto, 47640 Tepatitlán de Morelos, Jal.
+                <!-- Barra de progreso -->
+                <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar bg-success" role="progressbar"
+                    style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
                 </div>
                 </div>
+
+                <div class="arrival-limite text-muted">
+                Llegada a más tardar <strong>2:40 PM</strong>
+                </div>
             </div>
+            </section>
+
+            <section aria-labelledby="tec-title" class="tec-info">
+                <header class="section-sticky">
+                    <h3 id="tec-title" class="section-title mb-1">Técnico</h3>
+                </header>
+
+                <div class="tec-card d-flex align-items-center justify-content-between gap-3">
+                    <div class="flex-grow-1">
+                    <!-- Solo nombre y solo número (opcional: elimina la frase) -->
+                    <div id="NombreTec" class="tec-name"></div>
+                    <div id="NumTec" class="tec-number"></div>
+                    </div>
+
+                    <div class="rounded-circle bg-light border profile-avatar"
+                        style="width:48px;height:48px; display:flex; align-items:center; justify-content:center;">
+                    <i class="bi bi-person fs-4 text-secondary"></i>
+                    </div>
+                </div>
+
+                <div class="mt-3 d-flex align-items-center gap-2" id="input-div">
+                    <input type="text" class="input-mensaje" placeholder="Envía un mensaje al Técnico">
+                    <button type="button" class="btn-enviar">
+                    <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Servicio (sticky) -->
+            <section aria-labelledby="svc-title">
+                <header class="section-sticky">
+                <h3 id="svc-title" class="section-title mb-1">Servicio</h3>
+                </header>
+
+                <div class="servicio-card">
+                <!-- Contrato -->
+                <div class="servicio-item d-flex align-items-start gap-3">
+                    <i class="bi bi-clipboard2-data servicio-icon"></i>
+                    <div>
+                    <div class="servicio-label">Contrato</div>
+                    <div id="IDContrato" class="servicio-value"></div>
+                    </div>
+                </div>
+
+                <!-- Orden de Servicio -->
+                <div class="servicio-item d-flex align-items-start gap-3">
+                    <i class="bi bi-file-earmark-bar-graph-fill servicio-icon"></i>
+                    <div>
+                    <div class="servicio-label">Orden de Servicio</div>
+                    <div id="Problema" class="servicio-value"></div>
+                    </div>
+                </div>
+
+                <!-- Técnico -->
+                <div class="servicio-item d-flex align-items-start gap-3">
+                    <i class="bi bi-tools servicio-icon"></i>
+                    <div>
+                    <div class="servicio-label">Técnico</div>
+                    <div id="NombreTec" class="servicio-value"></div>
+                    </div>
+                </div>
+
+                <!-- Dirigiéndose a -->
+                <div class="servicio-item d-flex align-items-start gap-3">
+                    <i class="bi bi-geo-alt servicio-icon"></i>
+                    <div>
+                    <div class="servicio-label">Dirigiéndose a</div>
+                    <div id="Direccion" class="servicio-value"></div>
+                    </div>
+                </div>
+                </div>
+            </section>
             </div>
-        </section>
-        </div>
         </aside>
 
         </div>
     </div>
 
     <!-- Modal: datos del cliente (se mantiene por si lo usas en el mapa) -->
-    <div id="clientModal" class="modal" aria-hidden="true">
+    <!-- <div id="clientModal" class="modal" aria-hidden="true">
         <div class="modal-card">
         <h4 id="cm-title">Datos del cliente</h4>
         <div class="modal-row" id="cm-sub">—</div>
@@ -261,25 +259,25 @@ $payload = [
             <button id="cm-close">Cerrar</button>
         </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Modal evaluación al concluir -->
     <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true" aria-labelledby="ratingModalLabel">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 id="ratingModalLabel" class="modal-title">¡Tu orden ha concluido!</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="ratingModalLabel" class="modal-title">¡Tu orden ha concluido!</h5>
+            </div>
+            <div class="modal-body">
+                Califica a nuestro técnico y cuéntanos de tu experiencia.
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-primary" id="goEval" href="http://127.0.0.1/mapaclienteweb/mapa1/evaluation.php">Calificar ahora</a>
+                <!-- Cambia este botón por un <a> o dale onclick -->
+                <a class="btn btn-secondary" href="ordenes_servicio.php">Más tarde</a>
+            </div>
+            </div>
         </div>
-        <div class="modal-body">
-            Califica a nuestro técnico y cuéntanos de tu experiencia.
-        </div>
-        <div class="modal-footer">
-            <a class="btn btn-primary" id="goEval" href="http://127.0.0.1/mapaclienteweb/mapa1/evaluation.php">Calificar ahora</a>
-            <!-- Cambia este botón por un <a> o dale onclick -->
-            <a class="btn btn-secondary" href="ordenes_servicio.php">Más tarde</a>
-        </div>
-        </div>
-    </div>
     </div>
 
     <!-- SCRIPTS -->
