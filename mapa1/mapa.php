@@ -281,19 +281,14 @@ $payload = [
     </div>
 
     <!-- SCRIPTS -->
-    <script type="module">
-        import { startLiveSocket } from './scripts/api/live-socket.js';
-        // Cuando cargue el DOM iniciamos el socket
-        document.addEventListener('DOMContentLoaded', () => {
-            startLiveSocket();
-        });
-    </script>
+    <!-- Leaflet primero -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
-    <script type="module" src="scripts/main.js"></script>
+
+    <!-- Import map para three (si usas el overlay 3D) -->
     <script type="importmap">
         {
         "imports": {
@@ -301,26 +296,26 @@ $payload = [
         }
         }
     </script>
+
+    <!-- Inicializa mapa y expone globals -->
+    <script type="module" src="scripts/main.js"></script>
+
+    <!-- Define payload PHP para JS ANTES de arrancar el socket -->
+    <script>
+    window.__TRACK__ = <?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+    </script>
+
+    <!-- Arranca el live socket ya con el mapa listo -->
+    <script type="module">
+    import { startLiveSocket } from './scripts/api/live-socket.js';
+    startLiveSocket();
+    </script>
+
+    <!-- Overlay 3D (opcional) -->
     <script type="module" src="scripts/ui/car-overlay.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="scripts/api/mapacliente.js"></script>
-    <script>
-        window.__TRACK__ = <?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
-    </script>
-    <script>
-        // Mostrar modal si está Completado y sin calificación
-        document.addEventListener('DOMContentLoaded', () => {
-            const d = window.__TRACK__ || {};
-            const mustAskRating = (d.Status === 'Completado') && (Number(d.Rate || 0) === 0);
 
-            if (mustAskRating) {
-            const modalEl = document.getElementById('ratingModal');
-            if (modalEl && window.bootstrap && bootstrap.Modal) {
-                const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
-                modal.show();
-            }
-            }
-        });
-    </script>
 </body>
 </html>
