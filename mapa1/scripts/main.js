@@ -5,6 +5,10 @@ import { makeMarker, resetMarkers } from './layers/markers.js';
 import { showClientModal, wireModalClose } from './ui/modal.js';
 import { toast, showLoading } from './ui/toast.js';
 
+const ctx = initMap();
+window._leafletMap = ctx.map;
+window._layerCar   = ctx.groups.layerCar;
+
 const { map, bases, groups } = initMap();
 window._leafletMap = map;
 setupBaseSwitcher({ map, bases });

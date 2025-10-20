@@ -1,4 +1,4 @@
-// ES Module overlay 3D para el coche, usando THREE como módulo
+// ES Module overlay 3D para el coche, usando THREE como módulo (SIN ruta simulada)
 import * as THREE from 'three';
 import { GLTFLoader } from 'https://unpkg.com/three@0.159.0/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'https://unpkg.com/three@0.159.0/examples/jsm/loaders/DRACOLoader.js';
@@ -9,37 +9,40 @@ if (!map) {
   console.warn('Leaflet map no disponible para overlay 3D');
 } else {
   const parent = document.querySelector('.map');
-  console.log('[car-overlay] parent .map encontrado:', !!parent);
   const overlay = document.createElement('div');
   overlay.id = 'three-overlay';
   parent.appendChild(overlay);
 
   // Tamaño compacto tipo Uber
   const W = 140, H = 140;
-  const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(W, H);
   overlay.appendChild(renderer.domElement);
-  console.log('[car-overlay] renderer listo', {W,H, dpr: window.devicePixelRatio});
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, W/H, 0.1, 1000);
+  const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 1000);
   camera.position.set(0, 2.2, 4.5);
-  camera.lookAt(0,0,0);
+  camera.lookAt(0, 0, 0);
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0x8899aa, 0.9); scene.add(hemi);
-  const dir  = new THREE.DirectionalLight(0xffffff, 0.85); dir.position.set(2,4,2); scene.add(dir);
+  const dir  = new THREE.DirectionalLight(0xffffff, 0.85); dir.position.set(2, 4, 2); scene.add(dir);
 
-  const carGroup = new THREE.Group(); // contenedor base (no salta)
+  const carGroup = new THREE.Group();    // contenedor base
   scene.add(carGroup);
-  const modelGroup = new THREE.Group(); // grupo del modelo (sí salta)
+  const modelGroup = new THREE.Group();  // grupo del modelo (bobbing)
   carGroup.add(modelGroup);
 
-  // Halo pequeño (sombra) bajo el coche
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(0.55,32), new THREE.MeshBasicMaterial({color:0x000, transparent:true, opacity:0.12}));
-  floor.rotation.x = -Math.PI/2; floor.position.y = -0.6; carGroup.add(floor);
+  // Halo/sombra bajo el coche
+  const floor = new THREE.Mesh(
+    new THREE.CircleGeometry(0.55, 32),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.12 })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.6;
+  carGroup.add(floor);
 
-  // No placeholder: evitamos mostrar un bloque azul antes de cargar el GLB
+  // Estado de carga de modelo
   let carReady = false;
 
   const loader = new GLTFLoader();
@@ -48,9 +51,9 @@ if (!map) {
   loader.setDRACOLoader(draco);
 
   const glbUrl = new URL('model/carro.glb', window.location.href).href;
-  console.log('[car-overlay] cargando GLB:', glbUrl);
-  loader.load(glbUrl, (gltf)=>{
+  loader.load(glbUrl, (gltf) => {
     const car = gltf.scene;
+
     // Autoscale según bounding box
     const box1 = new THREE.Box3().setFromObject(car);
     const size1 = box1.getSize(new THREE.Vector3());
@@ -59,146 +62,140 @@ if (!map) {
     const k = target / maxDim;
     car.scale.setScalar(k);
 
-    // 🔁 Recalcula el bounding box ya escalado y centra al origen
+    // Recalcula BB y centra al origen
     const box2 = new THREE.Box3().setFromObject(car);
     const center = box2.getCenter(new THREE.Vector3());
-    car.position.sub(center);            // ✅ centrar
+    car.position.sub(center);
 
+    // Frente del modelo apuntando “hacia arriba” por defecto
     car.rotation.y = Math.PI;
+
     modelGroup.add(car);
     car.updateMatrixWorld(true);
     carReady = true;
-  }, (evt)=>{
-    const total = evt.total || 0; const loaded = evt.loaded || 0;
-    if (total) console.log('[car-overlay] progreso GLB', ((loaded/total)*100).toFixed(1)+'%');
-    else console.log('[car-overlay] progreso GLB bytes', loaded);
-  }, (err)=> console.warn('No se pudo cargar carro.glb', err));
+  }, undefined, (err) => console.warn('No se pudo cargar carro.glb', err));
 
-  // Ruta (vuelta al fraccionamiento) — puntos extraídos del KML
-  // Formato [lat, lon]; bucle continuo, 5s por segmento
-  const ROUTE = [
-    [20.79317567186798, -102.7672214204949],
-    [20.79354242108589, -102.7671164079807],
-    [20.79406175046234, -102.7670825520826],
-    [20.7941568122206,  -102.7678374090404],
-    [20.79423369731665, -102.7685772359237],
-    [20.79382307248717, -102.7686403702414],
-    [20.79330281651172, -102.7686958083112],
-    [20.79323373257632, -102.7681275124542],
-    [20.79315544180124, -102.7675901754282],
-    [20.79311270089282, -102.7673043851407]
-  ];
-  const MOVE_DURATION = 5.0;   // segundos de movimiento entre puntos
-  const DWELL_DURATION = 10.0; // segundos detenido en cada punto
-  let segIndex = 0;            // índice del punto actual (A)
-  let phase = 'dwell';         // 'dwell' | 'move'
-  let moveT = 0;               // tiempo acumulado en fase move
-  let dwellT = 0;              // tiempo acumulado en fase dwell
-  let followAcc = 0;           // acumulador de seguimiento
+  // ======= SIN SIMULACIÓN: seguimos la posición real =======
+
+  // marcador 2D (opcional)
   let carMarker = null;
 
-  function offsetLatLng([lat,lng], dxm, dym){
-    const latR = lat * Math.PI/180;
-    const dLat = dym / 111320;
-    const dLng = dxm / (111320 * Math.cos(latR));
-    return [lat + dLat, lng + dLng];
+  // Suavizado de posición/orientación
+  let last = null;      // { lat, lng, yawRad }
+  let target = null;    // { lat, lng, yawDeg } desde window._liveTarget
+  let lastT = performance.now();
+  let followAcc = 0;
+
+  function toRad(d) { return d * Math.PI / 180; }
+  function toDeg(r) { return r * 180 / Math.PI; }
+
+  function computeBearingDeg(a, b) {
+    const lat1 = toRad(a.lat), lon1 = toRad(a.lng);
+    const lat2 = toRad(b.lat), lon2 = toRad(b.lng);
+    const dLon = lon2 - lon1;
+    let brng = Math.atan2(
+      Math.sin(dLon) * Math.cos(lat2),
+      Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon)
+    );
+    brng = (toDeg(brng) + 360) % 360;
+    return brng;
   }
 
-  function lerp(a,b,t){ return a + (b-a)*t }
-  function interpLatLng(a,b,t){ return [ lerp(a[0],b[0],t), lerp(a[1],b[1],t) ] }
-
-  function positionOverlay(curLL){
-    const adj = offsetLatLng(curLL, 0, 0);
-    const p = map.latLngToContainerPoint(adj);
-    const x = p.x - W/2, y = p.y - H/2;
+  function positionOverlay(lat, lng) {
+    const p = map.latLngToContainerPoint([lat, lng]);
+    const x = p.x - W / 2, y = p.y - H / 2;
     const dom = renderer.domElement;
-    dom.style.position = 'absolute'; dom.style.left = `${x}px`; dom.style.top = `${y}px`;
+    dom.style.position = 'absolute';
+    dom.style.left = `${x}px`;
+    dom.style.top  = `${y}px`;
 
-    // Escala sutil acorde al zoom para que se vea pequeño
+    // Escala ligera por zoom (se ve pequeño a z bajos, mayor a z altos)
     const z = map.getZoom();
-    const s = Math.max(0.55, Math.min(0.95, 0.7 + 0.12*(z-18))); // clamp ~0.55..0.95
-    carGroup.scale.set(s,s,s);
+    const s = Math.max(0.55, Math.min(0.95, 0.7 + 0.12 * (z - 18)));
+    carGroup.scale.set(s, s, s);
 
-    // Crear/actualizar marcador solo cuando el GLB esté listo
-    if (carReady){
-      if (!carMarker){
-        carMarker = L.circleMarker(adj, { radius: 5, weight: 2, color: '#0B8FFF', fillColor:'#0B8FFF', fillOpacity:0.9 }).addTo(map);
+    // Crear/actualizar marcador 2D cuando el GLB esté listo
+    if (carReady) {
+      if (!carMarker) {
+        carMarker = L.circleMarker([lat, lng], {
+          radius: 5, weight: 2, color: '#0B8FFF', fillColor: '#0B8FFF', fillOpacity: 0.9
+        }).addTo(map);
       } else {
-        carMarker.setLatLng(adj);
+        carMarker.setLatLng([lat, lng]);
       }
     }
   }
 
-  // Animación de salto sutil y movimiento por ruta
-  let lastT = performance.now();
-  let t = 0; // segundos acumulados para bobbing
-  function render(now){
+  function render(now) {
     const dt = Math.min(0.05, (now - lastT) / 1000);
     lastT = now;
-    t += dt;
 
-    // Bobbing vertical: seno suave ~1.2 Hz, amplitud pequeña
-    const freq = 1.2; // Hz
+    // 1) Leer target externo (window._liveTarget), si existe
+    const ext = window._liveTarget;
+    if (ext && (isFinite(ext.lat) && isFinite(ext.lng))) {
+      target = { lat: Number(ext.lat), lng: Number(ext.lng), yawDeg: Number(ext.yaw || 0) };
+    }
+
+    // Si aún no hay target, oculta overlay y espera
+    if (!target) {
+      renderer.domElement.style.display = 'none';
+      requestAnimationFrame(render);
+      return;
+    } else {
+      renderer.domElement.style.display = 'block';
+    }
+
+    // 2) Suavizar posición (lerp)
+    if (!last) {
+      last = { lat: target.lat, lng: target.lng, yawRad: toRad(target.yawDeg || 0) };
+      // centrar mapa inicialmente
+      try { map.setView([last.lat, last.lng], Math.max(18, map.getZoom() || 18), { animate: false }); } catch (_) {}
+    } else {
+      const alpha = 0.15; // suavizado pos
+      last.lat = last.lat + (target.lat - last.lat) * alpha;
+      last.lng = last.lng + (target.lng - last.lng) * alpha;
+    }
+
+    // 3) Bobbing vertical suave
+    const freq = 1.2;      // Hz
     const omega = Math.PI * 2 * freq;
-    const amp = 0.06; // unidades locales
-    const bob = Math.sin(t * omega) * amp;
+    const amp = 0.06;      // amplitud
+    const bob = Math.sin(now / 1000 * omega) * amp;
     modelGroup.position.y = bob;
-
-    // Sin pitch lateral para evitar vaivén
     modelGroup.rotation.x = 0;
 
-    // Avance con pausas: 10s detenido en cada punto, 5s de movimiento al siguiente
-    const A = ROUTE[segIndex];
-    const B = ROUTE[(segIndex + 1) % ROUTE.length];
-    let curLL = A;
-    if (phase === 'dwell'){
-      dwellT += dt;
-      if (dwellT >= DWELL_DURATION){ phase = 'move'; moveT = 0; }
-    }
-    if (phase === 'move'){
-      moveT += dt;
-      let k = Math.min(1, moveT / MOVE_DURATION);
-      curLL = interpLatLng(A, B, k);
-      if (k >= 1){
-        segIndex = (segIndex + 1) % ROUTE.length;
-        phase = 'dwell'; dwellT = 0; moveT = 0; curLL = ROUTE[segIndex];
-      }
-    }
+    // 4) Orientación del coche (yaw)
+    //    Usa yaw del server si viene; si no, calcula por delta last→target
+    let yawDeg = isFinite(target.yawDeg) && target.yawDeg !== 0
+      ? target.yawDeg
+      : computeBearingDeg({ lat: last.lat, lng: last.lng }, { lat: target.lat, lng: target.lng });
 
-    // Orientación geográfica suavizada (solo se actualiza mientras se mueve)
-    const toRad = d=> d*Math.PI/180;
-    const lat1 = toRad(A[0]), lon1 = toRad(A[1]);
-    const lat2 = toRad(B[0]), lon2 = toRad(B[1]);
-    const dLon = lon2 - lon1;
-    let brng = Math.atan2(Math.sin(dLon)*Math.cos(lat2), Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon));
-    if (brng < 0) brng += Math.PI*2;
-    const FRONT_OFFSET = Math.PI; // corrige frente del modelo (evita reversa)
-    const targetYaw = (Math.PI - brng) + FRONT_OFFSET; // mapear + offset frente
-    carGroup.__yaw = typeof carGroup.__yaw === 'number' ? carGroup.__yaw : targetYaw;
-    if (phase === 'move'){
-      const tau = 0.25; // s
-      const alpha = 1 - Math.exp(-dt / tau);
-      let diff = (targetYaw - carGroup.__yaw + Math.PI) % (Math.PI*2) - Math.PI;
-      carGroup.__yaw = carGroup.__yaw + diff * alpha;
-    }
-    carGroup.rotation.y = carGroup.__yaw;
+    // Corrige frente del modelo (como antes)
+    const FRONT_OFFSET = Math.PI; // 180°
+    const targetYawRad = ((Math.PI - toRad(yawDeg)) + FRONT_OFFSET);
 
-    // Posicionar overlay y marcador
-    positionOverlay(curLL);
+    // Suavizado yaw (filtro 1º orden)
+    const tau = 0.25;  // constante de tiempo ~250ms
+    const a = 1 - Math.exp(-dt / tau);
+    if (!isFinite(last.yawRad)) last.yawRad = targetYawRad;
+    // normalizar dif. de ángulo a [-PI, PI]
+    let diff = (targetYawRad - last.yawRad + Math.PI) % (Math.PI * 2) - Math.PI;
+    last.yawRad = last.yawRad + diff * a;
 
-    // Seguir suavemente al coche
+    carGroup.rotation.y = last.yawRad;
+
+    // 5) Posicionar overlay y marcador
+    positionOverlay(last.lat, last.lng);
+
+    // 6) Auto-follow suave del mapa (no todo frame)
     followAcc += dt;
-    if (followAcc > 0.3){ followAcc = 0; try{ map.panTo(curLL, { animate:true, duration:0.3 }); }catch(e){} }
+    if (followAcc > 0.3) {
+      followAcc = 0;
+      try { map.panTo([target.lat, target.lng], { animate: true, duration: 0.3 }); } catch (e) {}
+    }
 
     renderer.render(scene, camera);
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
-
-  // Inicializar en primer punto: centra y hace zoom inmediato al coche
-  try{
-    map.setView(ROUTE[0], 20, { animate: false });
-  }catch(e){}
-
-  // (Opcional) Atajos de depuración desactivados
 }
