@@ -287,6 +287,7 @@ export function startLiveSocket() {
         }
         } catch(_) {}
 
+        window._lastLoc = { lat, lng };
         // Intenta (debounced) recalcular la ruta al destino
         maybeRecalcRoute();
     });

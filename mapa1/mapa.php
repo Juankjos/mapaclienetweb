@@ -26,6 +26,7 @@ $payload = [
     'NumTec'     => isset($track['NumTec']) ? (string)$track['NumTec'] : null,
     'Direccion'  => $track['Direccion'],
     'Status'     => $track['Status'],
+    'FechaInicio'=> $track['FechaInicio'] ?? null,
     'Rate'       => isset($track['Rate']) ? (int)$track['Rate'] : 0,
     'Nombre'     => $_SESSION['nombre'] ?? ($track['NombreCliente'] ?? 'Cliente')
 ];
@@ -154,7 +155,7 @@ $payload = [
 
             <div class="arrival-card">
                 <div class="arrival-estimada mb-2">
-                <strong>Llegada estimada:</strong> 2:20 PM
+                    <strong id="etaText">—</strong>
                 </div>
 
                 <!-- Barra de progreso -->
@@ -165,7 +166,7 @@ $payload = [
                 </div>
 
                 <div class="arrival-limite text-muted">
-                Llegada a más tardar <strong>2:40 PM</strong>
+                Llegada a más tardar <strong id="etaLimitText">—</strong>
                 </div>
             </div>
             </section>
@@ -316,6 +317,7 @@ $payload = [
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="scripts/api/mapacliente.js"></script>
+    <script type="module" src="scripts/layers/eta.js"></script>
 
 </body>
 </html>
