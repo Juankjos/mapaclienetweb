@@ -46,6 +46,47 @@ function bearingBetween(a,b){
     return (toDeg(brng) + 360) % 360;
 }
 
+function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+function haversineKm(lat1,lon1,lat2,lon2){
+    const R=6371;
+    const dLat=(lat2-lat1)*Math.PI/180;
+    const dLon=(lon2-lon1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2 +
+            Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) *
+            Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function updateProgressBar(){
+    try{
+        const bar = document.getElementById('routeProgressBar');
+        if (!bar || !window.__destLive || !target) return;
+
+        // totalKm: distancia total por calles (OSRM) si la tenemos;
+        // si no, inicialízala como la distancia en línea recta del primer cálculo.
+        if (typeof window.__totalKm !== 'number') {
+        window.__totalKm = haversineKm(target.lat, target.lng, window.__destLive.lat, window.__destLive.lng);
+        }
+
+        const remainKm = haversineKm(target.lat, target.lng, window.__destLive.lat, window.__destLive.lng);
+        const totalKm  = window.__totalKm || remainKm || 1e-6;
+
+        let p = (totalKm - remainKm) / totalKm;
+        p = clamp(p, 0, 1);
+        const pct = Math.round(p * 100);
+
+        bar.style.width = pct + '%';
+        bar.setAttribute('aria-valuenow', String(pct));
+
+        bar.classList.remove('bg-danger','bg-warning','bg-info','bg-success');
+        if (p < 0.25) bar.classList.add('bg-danger');
+        else if (p < 0.50) bar.classList.add('bg-info');
+        else if (p < 0.75) bar.classList.add('bg-success');
+        else bar.classList.add('bg-success');
+    }catch(e){ /* no-op */ }
+}
+
+
 function getMapOrThrow(){
     const m = getMap();
     if (!m) throw new Error('Leaflet map not ready');
@@ -138,6 +179,14 @@ async function drawOsrmRouteToDest(from, to) {
         console.warn('[live] OSRM sin geometría (route to dest), fallback recto');
         return drawStraightRoute(from, to);
         }
+        const distMeters = data?.routes?.[0]?.distance;
+        if (typeof distMeters === 'number' && isFinite(distMeters) && distMeters > 1) {
+            const km = distMeters / 1000;
+            // Solo setear si no existía, para mantener coherencia del “total”
+            if (typeof window.__totalKm !== 'number' || window.__totalKm < 0.2) {
+                window.__totalKm = km;
+            }
+        }
 
         const pts = coords.map(([x,y]) => L.latLng(y,x));
         if (!routeLine) {
@@ -146,10 +195,12 @@ async function drawOsrmRouteToDest(from, to) {
         } else {
         routeLine.setLatLngs(pts);
         }
+        updateProgressBar();
         routeLine.bringToFront?.();
     } catch (e) {
         console.warn('[live] OSRM error (route to dest), fallback recto:', e);
         drawStraightRoute(from, to);
+        updateProgressBar();
     }
 }
 

@@ -2,6 +2,9 @@
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 require_once 'db.php';
+require_once 'auth.php';
+gate_mesa_only_these();
+gate_only_mesa_for_these();
 
 if (empty($_SESSION['contrato'])) {
   http_response_code(401);

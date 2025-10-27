@@ -160,9 +160,9 @@ $payload = [
 
                 <!-- Barra de progreso -->
                 <div class="progress mb-2" style="height: 8px;">
-                <div class="progress-bar bg-success" role="progressbar"
-                    style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                </div>
+                    <div id="routeProgressBar" class="progress-bar bg-success" role="progressbar"
+                        style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    </div>
                 </div>
 
                 <div class="arrival-limite text-muted">

@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once 'db.php';
+require_once 'auth.php';
+gate_mesa_only_these();
 
 // Proteger ruta
 if (empty($_SESSION['contrato'])) {

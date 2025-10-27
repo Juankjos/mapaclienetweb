@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once 'db.php';
+require_once 'auth.php';
+gate_mesa_only_these();
+gate_only_mesa_for_these();
 
 // Requiere login
 if (empty($_SESSION['contrato'])) {

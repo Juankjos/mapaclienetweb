@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once 'db.php';
+require_once 'auth.php';
+gate_only_mesa_for_these();
+gate_mesa_only_these();
 
 // Requiere login
 if (empty($_SESSION['contrato'])) {
@@ -91,19 +94,35 @@ $tecnicos = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
                     <i class="bi bi-person fs-4 text-secondary"></i>
                 </div>
                 <div>
-                    <div class="fw-semibold" id="Nombre"><?= htmlspecialchars($_SESSION['nombre'] ?? 'Cliente', ENT_QUOTES, 'UTF-8') ?></div>
-                    <a href="administrar_cuenta.php" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
+                <div class="fw-semibold" id="Nombre">
+                <?= htmlspecialchars($payload['Nombre'] ?? ($_SESSION['nombre'] ?? 'Usuario'), ENT_QUOTES, 'UTF-8') ?>
                 </div>
+                <a href="administrar_cuenta.php" id="admin-cuenta" class="text-decoration-none small">Administrar cuenta</a>
             </div>
+            </div>
+
+            <?php $esMesa = is_mesa(); ?>
             <div class="menu-simple d-flex flex-column gap-2 mt-3">
+            <?php if ($esMesa): ?>
+                <button type="button" class="menu-btn" onclick="window.location.href='rate_tec.php'">
+                <i class="bi bi-star-half me-2"></i>
+                Calificaciones
+                </button>
+                <button type="button" class="menu-btn" onclick="window.location.href='registro_tecnico.php'">
+                <i class="bi bi-person-plus me-2"></i>
+                Registro de técnico
+                </button>
+                <!-- Sin Órdenes de Servicio ni Contacto a Soporte para Mesa -->
+            <?php else: ?>
                 <button type="button" class="menu-btn" onclick="window.location.href='ordenes_servicio.php'">
-                    <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
-                    Órdenes de Servicio
+                <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
+                Órdenes de Servicio
                 </button>
                 <button type="button" class="menu-btn">
-                    <i class="bi bi-person-raised-hand me-2"></i>
-                    Contacto a Soporte
+                <i class="bi bi-person-raised-hand me-2"></i>
+                Contacto a Soporte
                 </button>
+            <?php endif; ?>
             </div>
         </div>
         <div class="offcanvas-footer mt-auto">

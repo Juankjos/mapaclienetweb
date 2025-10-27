@@ -47,3 +47,39 @@ function can_view_map(mysqli $mysqli, string $contrato, int $reporteId = 0) {
 
     return $row ?: false;
 }
+
+function is_mesa(): bool {
+    return isset($_SESSION['contrato']) && $_SESSION['contrato'] === 'Mesa';
+}
+
+function gate_mesa_only_these(): void {
+    if (!is_mesa()) return;
+
+    $allowed = [
+        'rate_tec.php',
+        'comentarios_tec.php',
+        'registro_tecnico.php',
+        'administrar_cuenta.php',
+        'logout.php',
+        'login.php', 
+    ];
+    $current = basename($_SERVER['SCRIPT_NAME'] ?? '');
+    if (!in_array($current, $allowed, true)) {
+        header('Location: rate_tec.php');
+        exit;
+    }
+}
+
+function gate_only_mesa_for_these(): void {
+    $restricted = [
+        'rate_tec.php',
+        'comentarios_tec.php',
+        'registro_tecnico.php',
+    ];
+    $current = basename($_SERVER['SCRIPT_NAME'] ?? '');
+    if (in_array($current, $restricted, true) && !is_mesa()) {
+        // Redirige al “home” de clientes
+        header('Location: ordenes_servicio.php');
+        exit;
+    }
+}
