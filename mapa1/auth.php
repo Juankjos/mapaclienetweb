@@ -60,6 +60,7 @@ function gate_mesa_only_these(): void {
         'comentarios_tec.php',
         'registro_tecnico.php',
         'administrar_cuenta.php',
+        'tech_actions.php',
         'logout.php',
         'login.php', 
     ];
@@ -75,6 +76,7 @@ function gate_only_mesa_for_these(): void {
         'rate_tec.php',
         'comentarios_tec.php',
         'registro_tecnico.php',
+        'tech_actions.php',
     ];
     $current = basename($_SERVER['SCRIPT_NAME'] ?? '');
     if (in_array($current, $restricted, true) && !is_mesa()) {
