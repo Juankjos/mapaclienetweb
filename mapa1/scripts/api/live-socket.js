@@ -32,6 +32,43 @@ let lastRouteFrom = null;           // {lat,lng} del último origen usado
 const ROUTE_MIN_SECS = 3;           // no recalcular más frecuente que cada 3 s
 const ROUTE_MIN_METERS = 30;        // ni por desplazamientos < 30 m
 
+// --- CHAT UI helpers ---
+let chatListEl = null;
+let chatBoxEl  = null;
+let chatInput  = null;
+let chatSendBtn = null;
+let chatReportId = null;
+
+function formatTime(ts){
+    try {
+        const d = new Date(Number(ts) || Date.now());
+        const hh = String(d.getHours()).padStart(2,'0');
+        const mm = String(d.getMinutes()).padStart(2,'0');
+        return `${hh}:${mm}`;
+    } catch { return ''; }
+}
+
+function appendChatBubble({ text, from, ts }, myRole){
+    if (!chatListEl) return;
+    const isMe = (from === myRole);
+    const div = document.createElement('div');
+    div.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+    div.innerHTML = `${escapeHtml(text)}<span class="chat-time">${formatTime(ts)}</span>`;
+    chatListEl.appendChild(div);
+    // autoscroll
+    if (chatBoxEl) chatBoxEl.scrollTop = chatBoxEl.scrollHeight;
+}
+
+function clearChat(){
+    if (chatListEl) chatListEl.innerHTML = '';
+}
+
+function escapeHtml(s){
+    return String(s || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
 // --- Utilidades varias ---
 function toRad(d){ return d * Math.PI / 180; }
 function toDeg(r){ return r * 180 / Math.PI; }
@@ -308,7 +345,28 @@ export function startLiveSocket() {
         reconnectionDelayMax: 6000,
     });
 
-    socket.on('connect', ()=> console.log('[live] connected, id=', socket.id));
+    chatListEl  = document.getElementById('chatList');
+    chatBoxEl   = document.getElementById('chatBox');
+    chatInput   = document.getElementById('chatInput');
+    chatSendBtn = document.getElementById('chatSendBtn');
+    chatReportId = reportId;
+
+    if (chatInput && chatSendBtn) {
+        chatInput.disabled  = true;
+        chatSendBtn.disabled = true;
+    }
+
+    socket.on('connect', () => {
+        console.log('[live] connected, id=', socket.id);
+        // Habilita input al conectar
+        if (chatInput && chatSendBtn) {
+            chatInput.disabled  = false;
+            chatSendBtn.disabled = false;
+            chatInput.placeholder = 'Envía un mensaje al Técnico';
+        }
+        // Pide historial (últimos 50)
+        socket.emit('chat:history:get', { limit: 50 });
+    });
     socket.on('connect_error', (err) => console.error('[live] connect_error:', err?.message || err, err));
     socket.on('error', (err) => console.error('[live] error:', err));
 
@@ -382,7 +440,58 @@ export function startLiveSocket() {
         } catch(_) {}
     });
 
-    socket.on('disconnect', ()=> console.log('[live] disconnected'));
+    socket.on('disconnect', () => {
+        console.log('[live] disconnected');
+        if (chatInput && chatSendBtn) {
+            chatInput.disabled  = true;
+            chatSendBtn.disabled = true;
+            chatInput.placeholder = 'Conectando…';
+        }
+    });
+
+    socket.on('chat:history', (list) => {
+        try {
+            clearChat();
+            const arr = Array.isArray(list) ? list : [];
+            arr.forEach(msg => {
+                if (Number(msg.reportId) !== chatReportId) return; // sanity
+                appendChatBubble({ text: msg.text, from: msg.from, ts: msg.ts }, /*myRole*/ 'client');
+            });
+        } catch (e) { console.warn('[chat] history error', e); }
+    });
+
+    socket.on('chat:message', (msg) => {
+        try {
+            if (Number(msg.reportId) !== chatReportId) return;
+            appendChatBubble({ text: msg.text, from: msg.from, ts: msg.ts }, /*myRole*/ 'client');
+        } catch (e) { console.warn('[chat] message parse', e); }
+    });
+
+  // Enviar (click o Enter)
+    function sendCurrent(){
+        if (!chatInput || !chatInput.value) return;
+        const text = chatInput.value.trim();
+        if (!text) return;
+        // emitimos; el servidor re-emitirá y lo veremos en chat:message
+        socket.emit('chat:send', {
+            reportId,
+            from: 'client',
+            senderId: null,
+            text,
+            ts: Date.now()
+        });
+        chatInput.value = '';
+    }
+
+    if (chatSendBtn) chatSendBtn.addEventListener('click', sendCurrent);
+    if (chatInput) {
+        chatInput.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                sendCurrent();
+            }
+        });
+    }
 
     // Expón para depuración
     window._liveSocket = socket;
