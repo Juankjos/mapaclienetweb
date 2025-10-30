@@ -58,7 +58,7 @@ if (!map) {
     const box1 = new THREE.Box3().setFromObject(car);
     const size1 = box1.getSize(new THREE.Vector3());
     const maxDim = Math.max(size1.x, size1.y, size1.z) || 1;
-    const target = 2.0;
+    const target = 2.2;
     const k = target / maxDim;
     car.scale.setScalar(k);
 

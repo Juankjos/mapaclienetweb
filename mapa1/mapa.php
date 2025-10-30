@@ -174,7 +174,7 @@ $payload = [
 
             <section aria-labelledby="tec-title" class="tec-info">
                 <header class="section-sticky">
-                    <h3 id="tec-title" class="section-title mb-1">Técnico</h3>
+                    <h3 id="tec-title" class="section-title mb-1">Habla con tu Técnico</h3>
                 </header>
 
                 <div class="tec-card d-flex align-items-center justify-content-between gap-3">
