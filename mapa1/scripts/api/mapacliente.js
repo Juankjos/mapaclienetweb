@@ -132,3 +132,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const d = window.__TRACK__ || {};
+    const mustAsk = (d.Status === 'Completado') && (Number(d.Rate || 0) === 0);
+
+    if (mustAsk && window.bootstrap && bootstrap.Modal) {
+        const modalEl = document.getElementById('ratingModal');
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+            // Actualiza el link a evaluation.php con el IDReporte real
+            const a = document.getElementById('goEval');
+            if (a && d.IDReporte) a.href = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
+            modal.show();
+        }
+    }
+});
+
+(function statusPolling(){
+    const d = window.__TRACK__ || {};
+    if (!d.IDReporte || !d.IDContrato) return;
+
+    let shown = false;
+    async function check() {
+        try {
+            const resp = await fetch(`check_status.php?reporte=${encodeURIComponent(d.IDReporte)}&contrato=${encodeURIComponent(d.IDContrato)}`, {cache:'no-store'});
+            if (!resp.ok) return;
+            const j = await resp.json(); // {status:'En camino'|'Completado'|..., rate:0-5}
+            if (!shown && j && j.status === 'Completado' && Number(j.rate||0) === 0) {
+                shown = true;
+            if (window.bootstrap && bootstrap.Modal) {
+                const modalEl = document.getElementById('ratingModal');
+                const a = document.getElementById('goEval');
+            if (a && d.IDReporte) a.href = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
+                const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+                modal.show();
+            } else {
+                // Fallback si Bootstrap no está
+                if (confirm('Tu orden ha concluido. ¿Deseas calificar ahora?')) {
+                    location.href = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
+                } else {
+                    location.href = 'ordenes_servicio.php';
+                }
+                }
+            }
+        } catch {}
+    }
+
+    // primer chequeo inmediato + cada 5s
+    check();
+    setInterval(check, 5000);
+})();

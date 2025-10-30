@@ -278,7 +278,7 @@ $payload = [
                 Califica a nuestro técnico y cuéntanos de tu experiencia.
             </div>
             <div class="modal-footer">
-                <a class="btn btn-primary" id="goEval" href="http://127.0.0.1/mapaclienteweb/mapa1/evaluation.php">Calificar ahora</a>
+                <a class="btn btn-primary" id="goEval" href="#">Calificar ahora</a>
                 <!-- Cambia este botón por un <a> o dale onclick -->
                 <a class="btn btn-secondary" href="ordenes_servicio.php">Más tarde</a>
             </div>
