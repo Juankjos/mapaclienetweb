@@ -43,14 +43,29 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
 
 function showEvalPrompt(d) {
     const evalUrl = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
+    const laterUrl = 'ordenes_servicio.php';
+
+    function secureRedirect(url) {
+        try {
+            history.pushState(null, '', location.href);
+            history.replaceState(null, '', location.href);
+            window.addEventListener('popstate', () => {
+            history.pushState(null, '', location.href);
+            });
+        } catch {}
+
+        setTimeout(() => {
+            window.location.replace(url); // <- reemplaza la entrada del historial
+        }, 50);
+    }
 
     // Fallback si SweetAlert2 no cargó
     if (typeof Swal === 'undefined') {
-        setTimeout(() => { location.href = evalUrl; }, 20000);
+        setTimeout(() => { secureRedirect(evalUrl); }, 5000);
         if (confirm('Tu orden ha concluido. ¿Deseas calificar ahora?')) {
-            location.href = evalUrl;
+            secureRedirect(evalUrl);
         } else {
-            location.href = 'ordenes_servicio.php';
+            secureRedirect(laterUrl);
         }
         return;
     }
@@ -59,7 +74,7 @@ function showEvalPrompt(d) {
     Swal.fire({
         title: '¡Tu orden ha concluido!',
         html: 'Califica a nuestro técnico y cuéntanos tu experiencia.<br><br>' +
-            'Redirigiendo en <b id="swal-timer">20</b>s…',
+            'Redirigiendo en <b id="swal-timer">5</b>s…',
         icon: 'success',
         showCancelButton: true,
         confirmButtonText: 'Calificar ahora',
@@ -67,30 +82,29 @@ function showEvalPrompt(d) {
         allowOutsideClick: false,
         allowEscapeKey: false,
         reverseButtons: true,
-        timer: 20000,
+        timer: 5000,
         timerProgressBar: true,
         didOpen: () => {
             const $cnt = Swal.getHtmlContainer();
             const $b = $cnt ? $cnt.querySelector('#swal-timer') : null;
-            let s = 20;
+            let s = 5;
             timerInterval = setInterval(() => {
                 s = Math.max(0, s - 1);
                 if ($b) $b.textContent = String(s);
             }, 1000);
         },
-        willClose: () => {
-            clearInterval(timerInterval);
-        }
+        willClose: () => clearInterval(timerInterval)
     }).then((res) => {
-    if (res.isConfirmed) {
-            // Usuario eligió "Calificar ahora"
-            location.href = evalUrl;
+        // ✅ Cualquier salida bloquea el regreso a mapa
+        if (res.isConfirmed) {
+            secureRedirect(evalUrl);
         } else if (res.dismiss === Swal.DismissReason.cancel) {
-            // Usuario eligió "Más tarde"
-            location.href = 'ordenes_servicio.php';
+            secureRedirect(laterUrl);
         } else if (res.dismiss === Swal.DismissReason.timer) {
-            // ⏱️ Se acabó el tiempo: redirige a evaluación
-            location.href = evalUrl;
+            secureRedirect(evalUrl);
+        } else {
+            // fallback por cualquier otro cierre
+            secureRedirect(evalUrl);
         }
     });
 }
@@ -193,24 +207,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mustAsk) showEvalPrompt(d);
 });
 
-(function statusPolling(){
+(function statusPolling() {
     const d = window.__TRACK__ || {};
     if (!d.IDReporte || !d.IDContrato) return;
 
+    let previousStatus = d.Status;
+    let previousRate = d.Rate || 0;
     let shown = false;
+
     async function check() {
         try {
-            const resp = await fetch(`check_status.php?reporte=${encodeURIComponent(d.IDReporte)}&contrato=${encodeURIComponent(d.IDContrato)}`, {cache:'no-store'});
+            const resp = await fetch(
+                `check_status.php?reporte=${encodeURIComponent(d.IDReporte)}&contrato=${encodeURIComponent(d.IDContrato)}`,
+                { cache: 'no-store' }
+            );
             if (!resp.ok) return;
+
             const j = await resp.json(); // {status:'En camino'|'Completado'|..., rate:0-5}
-            if (!shown && j && j.status === 'Completado' && Number(j.rate||0) === 0) {
-                shown = true;
-                showEvalPrompt(d);
+            if (!j || !j.status) return;
+
+            // 💡 Solo reacciona si cambia el status o el rate
+            const statusChanged = j.status !== previousStatus;
+            const rateChanged = Number(j.rate || 0) !== Number(previousRate);
+
+            // Actualiza variables para el próximo ciclo
+            previousStatus = j.status;
+            previousRate = j.rate || 0;
+
+            // 🔥 Detecta transición válida
+            if (!shown && j.status === 'Completado' && Number(j.rate || 0) === 0) {
+                shown = true; // evita repetir
+                console.log('🟢 Orden completada detectada, mostrando SweetAlert...');
+                showEvalPrompt({
+                    ...d,
+                    Status: j.status,
+                    Rate: j.rate || 0
+                });
+            } else if (statusChanged || rateChanged) {
+                console.log(`🔄 Estado actual: ${j.status} / Rate: ${j.rate}`);
             }
-        } catch {}
+
+        } catch (err) {
+            console.warn('Error al verificar estado dinámico:', err);
+        }
     }
 
-    // primer chequeo inmediato + cada 5s
+    // Primer chequeo inmediato y luego cada 5 segundos
     check();
     setInterval(check, 5000);
 })();

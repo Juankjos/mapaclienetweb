@@ -14,7 +14,8 @@ $reporteId = isset($_GET['reporte']) ? (int)$_GET['reporte'] : 0;
 $track = can_view_map($mysqli, $contrato, $reporteId);
 if ($track === false) {
     $_SESSION['flash_error'] = 'No tienes una orden activa para ver el mapa.';
-    header('Location: ordenes_servicio.php'); exit;
+    header('Location: ordenes_servicio.php'); 
+    exit;
 }
 
 // Payload para JS (incluye Rate)
@@ -52,7 +53,6 @@ $payload = [
     <link rel="stylesheet" href="styles/map/navbar.css" />
     <link rel="stylesheet" href="styles/map/tecnico.css" />
     <link rel="stylesheet" href="styles/map/tecnicopanel.css" />
-    <link rel="stylesheet" href="styles/map/tecnico.css.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
