@@ -252,40 +252,6 @@ $payload = [
         </div>
     </div>
 
-    <!-- Modal: datos del cliente (se mantiene por si lo usas en el mapa) -->
-    <!-- <div id="clientModal" class="modal" aria-hidden="true">
-        <div class="modal-card">
-        <h4 id="cm-title">Datos del cliente</h4>
-        <div class="modal-row" id="cm-sub">—</div>
-        <div class="modal-row" id="cm-problema"></div>
-        <div class="modal-row" id="cm-creacion"></div>
-        <div class="modal-row" id="cm-ejecucion"></div>
-        <div class="modal-row" id="cm-solucion"></div>
-        <div class="modal-actions">
-            <button id="cm-close">Cerrar</button>
-        </div>
-        </div>
-    </div> -->
-
-    <!-- Modal evaluación al concluir -->
-    <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true" aria-labelledby="ratingModalLabel">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 id="ratingModalLabel" class="modal-title">¡Tu orden ha concluido!</h5>
-            </div>
-            <div class="modal-body">
-                Califica a nuestro técnico y cuéntanos de tu experiencia.
-            </div>
-            <div class="modal-footer">
-                <a class="btn btn-primary" id="goEval" href="#">Calificar ahora</a>
-                <!-- Cambia este botón por un <a> o dale onclick -->
-                <a class="btn btn-secondary" href="ordenes_servicio.php">Más tarde</a>
-            </div>
-            </div>
-        </div>
-    </div>
-
     <!-- SCRIPTS -->
     <!-- Leaflet primero -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -294,7 +260,7 @@ $payload = [
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
 
-    <!-- Import map para three (si usas el overlay 3D) -->
+    <!-- Import map para three -->
     <script type="importmap">
         {
         "imports": {
@@ -311,13 +277,11 @@ $payload = [
     window.__TRACK__ = <?= json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
     </script>
 
-    <!-- Arranca el live socket ya con el mapa listo -->
     <script type="module">
     import { startLiveSocket } from './scripts/api/live-socket.js';
     startLiveSocket();
     </script>
 
-    <!-- Overlay 3D (opcional) -->
     <script type="module" src="scripts/ui/car-overlay.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

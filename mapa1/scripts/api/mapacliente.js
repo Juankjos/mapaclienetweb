@@ -41,6 +41,60 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
     }
 });
 
+function showEvalPrompt(d) {
+    const evalUrl = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
+
+    // Fallback si SweetAlert2 no cargó
+    if (typeof Swal === 'undefined') {
+        setTimeout(() => { location.href = evalUrl; }, 20000);
+        if (confirm('Tu orden ha concluido. ¿Deseas calificar ahora?')) {
+            location.href = evalUrl;
+        } else {
+            location.href = 'ordenes_servicio.php';
+        }
+        return;
+    }
+
+    let timerInterval;
+    Swal.fire({
+        title: '¡Tu orden ha concluido!',
+        html: 'Califica a nuestro técnico y cuéntanos tu experiencia.<br><br>' +
+            'Redirigiendo en <b id="swal-timer">20</b>s…',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'Calificar ahora',
+        cancelButtonText: 'Más tarde',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        reverseButtons: true,
+        timer: 20000,
+        timerProgressBar: true,
+        didOpen: () => {
+            const $cnt = Swal.getHtmlContainer();
+            const $b = $cnt ? $cnt.querySelector('#swal-timer') : null;
+            let s = 20;
+            timerInterval = setInterval(() => {
+                s = Math.max(0, s - 1);
+                if ($b) $b.textContent = String(s);
+            }, 1000);
+        },
+        willClose: () => {
+            clearInterval(timerInterval);
+        }
+    }).then((res) => {
+    if (res.isConfirmed) {
+            // Usuario eligió "Calificar ahora"
+            location.href = evalUrl;
+        } else if (res.dismiss === Swal.DismissReason.cancel) {
+            // Usuario eligió "Más tarde"
+            location.href = 'ordenes_servicio.php';
+        } else if (res.dismiss === Swal.DismissReason.timer) {
+            // ⏱️ Se acabó el tiempo: redirige a evaluación
+            location.href = evalUrl;
+        }
+    });
+}
+
 // Normaliza dirección ocultando "Colonia" y "Ciudad".
 // Si colonia y ciudad son iguales, solo muestra una vez la ciudad (sin palabra "Ciudad").
 function formatDireccion(raw) {
@@ -136,17 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const d = window.__TRACK__ || {};
     const mustAsk = (d.Status === 'Completado') && (Number(d.Rate || 0) === 0);
-
-    if (mustAsk && window.bootstrap && bootstrap.Modal) {
-        const modalEl = document.getElementById('ratingModal');
-        if (modalEl) {
-            const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
-            // Actualiza el link a evaluation.php con el IDReporte real
-            const a = document.getElementById('goEval');
-            if (a && d.IDReporte) a.href = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
-            modal.show();
-        }
-    }
+    if (mustAsk) showEvalPrompt(d);
 });
 
 (function statusPolling(){
@@ -161,20 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const j = await resp.json(); // {status:'En camino'|'Completado'|..., rate:0-5}
             if (!shown && j && j.status === 'Completado' && Number(j.rate||0) === 0) {
                 shown = true;
-            if (window.bootstrap && bootstrap.Modal) {
-                const modalEl = document.getElementById('ratingModal');
-                const a = document.getElementById('goEval');
-            if (a && d.IDReporte) a.href = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
-                const modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
-                modal.show();
-            } else {
-                // Fallback si Bootstrap no está
-                if (confirm('Tu orden ha concluido. ¿Deseas calificar ahora?')) {
-                    location.href = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
-                } else {
-                    location.href = 'ordenes_servicio.php';
-                }
-                }
+                showEvalPrompt(d);
             }
         } catch {}
     }
