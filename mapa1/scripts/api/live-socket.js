@@ -1,7 +1,8 @@
 // scripts/api/live-socket.js
 // Cargar socket.io (ESM) desde CDN
 import io from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
-
+window.showEvalPrompt = showEvalPrompt;
+window.showCanceledPrompt = showCanceledPrompt;
 const getMap = () => window._leafletMap;
 
 // Marcadores/capas
@@ -324,14 +325,28 @@ export function startLiveSocket() {
         const d = window.__TRACK__ || {};
         if (Number(msg.reportId) !== Number(d.IDReporte)) return;
 
+        // evita duplicar con el polling
+        if (window.__statusPromptShown) return;
+
         const status = msg.status;
         const rate   = Number(msg.rate || 0);
 
-        if ((status === 'Completado' || status === 'Cancelado') && rate === 0) {
-        // Por si el polling aún no detecta, dispara de inmediato:
-        showEvalPrompt({ ...d, Status: status, Rate: rate });
+        if (status === 'Cancelado') {
+            window.__statusPromptShown = true;
+            if (typeof window.showCanceledPrompt === 'function') {
+            window.showCanceledPrompt();
+            }
+            return;
         }
-    } catch (e) { console.warn('[ws] status:live error', e); }
+
+        if (status === 'Completado' && rate === 0) {
+            window.__statusPromptShown = true;
+            if (typeof window.showEvalPrompt === 'function') {
+            window.showEvalPrompt({ ...d, Status: status, Rate: rate });
+            }
+            return;
+        }
+        } catch (e) { console.warn('[ws] status:live error', e); }
     });
 
     const track = window.__TRACK__; // viene de mapa.php

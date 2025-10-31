@@ -5,6 +5,20 @@ function setAllById(id, text) {
     });
 }
 
+function secureRedirect(url) {
+    try {
+        history.pushState(null, '', location.href);
+        history.replaceState(null, '', location.href);
+        window.addEventListener('popstate', () => {
+        history.pushState(null, '', location.href);
+        });
+    } catch {}
+
+    setTimeout(() => {
+        window.location.replace(url); // <- reemplaza la entrada del historial
+    }, 50);
+}
+
 (function hydratePanel(){
     const d = window.__TRACK__ || {};
     // Offcanvas: Nombre del cliente
@@ -41,124 +55,31 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
     }
 });
 
+function showCanceledPrompt() {
+    const laterUrl = 'ordenes_servicio.php';
+
+    if (typeof Swal === 'undefined') {
+        alert('Su orden fue Cancelada. Ante cualquier duda o aclaración contacte a soporte.');
+        secureRedirect(laterUrl);
+        return;
+    }
+
+    Swal.fire({
+        icon: 'info',
+        title: 'Su orden fue Cancelada',
+        html: 'Ante cualquier duda o aclaración contacte a soporte.',
+        confirmButtonText: 'OK',
+        allowOutsideClick: false,
+        allowEscapeKey: false
+    }).then(() => {
+        secureRedirect(laterUrl);
+    });
+}
+
 function showEvalPrompt(d) {
-    //Vigilancia ante cambio de status
-    (function statusWatcher(){
-        const d = window.__TRACK__ || {};
-        if (!d.IDReporte || !d.IDContrato) return;
-
-        let stopped = false;               // corta la vigilancia después de disparar
-        let currentStatus = d.Status;
-        let currentRate   = Number(d.Rate || 0);
-        let timerId = null;
-        let controller = null;
-
-        // Cadencia: rápido si visible, lento si no
-        const FAST_MS = 3000;
-        const SLOW_MS = 10000;
-
-        function scheduleNext(ms){
-            if (stopped) return;
-            clearTimeout(timerId);
-            timerId = setTimeout(runOnce, ms);
-        }
-
-        // Calcula el próximo intervalo según visibilidad
-        function nextInterval() {
-            return document.hidden ? SLOW_MS : FAST_MS;
-        }
-
-        async function runOnce(){
-            if (stopped) return;
-
-            // evita requests solapadas
-            try { controller?.abort(); } catch {}
-            controller = new AbortController();
-
-            try {
-            const url = `check_status.php?reporte=${encodeURIComponent(d.IDReporte)}&contrato=${encodeURIComponent(d.IDContrato)}`;
-            const resp = await fetch(url, { cache: 'no-store', signal: controller.signal });
-            if (!resp.ok) {
-                // En error, reintenta más lento
-                scheduleNext(SLOW_MS);
-                return;
-            }
-            const j = await resp.json();
-            if (!j || !j.ok) {
-                scheduleNext(SLOW_MS);
-                return;
-            }
-
-            const newStatus = j.status;
-            const newRate   = Number(j.rate || 0);
-
-            // Log útil
-            if (newStatus !== currentStatus || newRate !== currentRate) {
-                console.log(`[poll] status: ${currentStatus} -> ${newStatus} | rate: ${currentRate} -> ${newRate}`);
-            }
-
-            currentStatus = newStatus;
-            currentRate   = newRate;
-
-            // 🔔 Dispara cuando pase a Completado o Cancelado con Rate 0
-            if ((newStatus === 'Completado' || newStatus === 'Cancelado') && newRate === 0) {
-                stopped = true;         // no más polling
-                clearTimeout(timerId);
-                try { controller.abort(); } catch {}
-                showEvalPrompt({
-                ...d,
-                Status: newStatus,
-                Rate: newRate
-                });
-                return;
-            }
-
-            // Programa siguiente ciclo
-            scheduleNext(nextInterval());
-
-            } catch (err) {
-            if (err?.name === 'AbortError') {
-                // ignorar, habrá otro ciclo
-            } else {
-                console.warn('[poll] error', err);
-            }
-            scheduleNext(SLOW_MS);
-            }
-        }
-
-        // Arranque inmediato
-        runOnce();
-
-        // Ajusta cadencia al cambiar visibilidad
-        document.addEventListener('visibilitychange', () => {
-            if (stopped) return;
-            scheduleNext(200); // reprograma pronto con la nueva cadencia
-        });
-
-        // Limpia al salir de la página
-        window.addEventListener('beforeunload', () => {
-            stopped = true;
-            clearTimeout(timerId);
-            try { controller?.abort(); } catch {}
-        });
-    })();
 
     const evalUrl = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
     const laterUrl = 'ordenes_servicio.php';
-
-    function secureRedirect(url) {
-        try {
-            history.pushState(null, '', location.href);
-            history.replaceState(null, '', location.href);
-            window.addEventListener('popstate', () => {
-            history.pushState(null, '', location.href);
-            });
-        } catch {}
-
-        setTimeout(() => {
-            window.location.replace(url); // <- reemplaza la entrada del historial
-        }, 50);
-    }
 
     // Fallback si SweetAlert2 no cargó
     if (typeof Swal === 'undefined') {
@@ -308,52 +229,78 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mustAsk) showEvalPrompt(d);
 });
 
-(function statusPolling() {
+(function statusWatcher(){
     const d = window.__TRACK__ || {};
     if (!d.IDReporte || !d.IDContrato) return;
 
-    let previousStatus = d.Status;
-    let previousRate = d.Rate || 0;
-    let shown = false;
+    let stopped = false;
+    let currentStatus = d.Status;
+    let currentRate   = Number(d.Rate || 0);
+    let timerId = null;
+    let controller = null;
+    let shown = false; // evita doble prompt por socket + polling
 
-    async function check() {
+    const FAST_MS = 3000;
+    const SLOW_MS = 10000;
+
+    function scheduleNext(ms){
+        if (stopped || shown) return;
+        clearTimeout(timerId);
+        timerId = setTimeout(runOnce, ms);
+    }
+    function nextInterval(){ return document.hidden ? SLOW_MS : FAST_MS; }
+
+    async function runOnce(){
+        if (stopped || shown) return;
+        try { controller?.abort(); } catch {}
+        controller = new AbortController();
+
         try {
-            const resp = await fetch(
-                `check_status.php?reporte=${encodeURIComponent(d.IDReporte)}&contrato=${encodeURIComponent(d.IDContrato)}`,
-                { cache: 'no-store' }
-            );
-            if (!resp.ok) return;
+        const url = `check_status.php?reporte=${encodeURIComponent(d.IDReporte)}&contrato=${encodeURIComponent(d.IDContrato)}`;
+        const resp = await fetch(url, { cache:'no-store', signal: controller.signal });
+        if (!resp.ok) { scheduleNext(SLOW_MS); return; }
+        const j = await resp.json();
+        if (!j || !j.ok) { scheduleNext(SLOW_MS); return; }
 
-            const j = await resp.json(); // {status:'En camino'|'Completado'|..., rate:0-5}
-            if (!j || !j.status) return;
+        const newStatus = j.status;
+        const newRate   = Number(j.rate || 0);
 
-            // 💡 Solo reacciona si cambia el status o el rate
-            const statusChanged = j.status !== previousStatus;
-            const rateChanged = Number(j.rate || 0) !== Number(previousRate);
+        if (newStatus !== currentStatus || newRate !== currentRate) {
+            console.log(`[poll] status: ${currentStatus} -> ${newStatus} | rate: ${currentRate} -> ${newRate}`);
+        }
 
-            // Actualiza variables para el próximo ciclo
-            previousStatus = j.status;
-            previousRate = j.rate || 0;
+        currentStatus = newStatus;
+        currentRate   = newRate;
 
-            // 🔥 Detecta transición válida
-            if (!shown && j.status === 'Completado' && Number(j.rate || 0) === 0) {
-                shown = true; // evita repetir
-                console.log('🟢 Orden completada detectada, mostrando SweetAlert...');
-                showEvalPrompt({
-                    ...d,
-                    Status: j.status,
-                    Rate: j.rate || 0
-                });
-            } else if (statusChanged || rateChanged) {
-                console.log(`🔄 Estado actual: ${j.status} / Rate: ${j.rate}`);
-            }
+        // 🔴 Cancelado: prioridad máxima
+        if (!shown && newStatus === 'Cancelado') {
+            shown = true; stopped = true;
+            clearTimeout(timerId); try{controller.abort();}catch{}
+            showCanceledPrompt();
+            return;
+        }
+
+        // ⭐ Completado + sin calificación
+        if (!shown && newStatus === 'Completado' && newRate === 0) {
+            shown = true; stopped = true;
+            clearTimeout(timerId); try{controller.abort();}catch{}
+            showEvalPrompt({ ...d, Status:newStatus, Rate:newRate });
+            return;
+        }
+
+        scheduleNext(nextInterval());
 
         } catch (err) {
-            console.warn('Error al verificar estado dinámico:', err);
+        if (err?.name !== 'AbortError') console.warn('[poll] error', err);
+        scheduleNext(SLOW_MS);
         }
     }
 
-    // Primer chequeo inmediato y luego cada 5 segundos
-    check();
-    setInterval(check, 5000);
+    // si ya llegó Completado+rate=0 desde el server al cargar, dispara
+    const mustAsk = (d.Status === 'Completado') && (Number(d.Rate || 0) === 0);
+    if (mustAsk) { shown = true; showEvalPrompt(d); return; }
+
+    runOnce();
+    document.addEventListener('visibilitychange', ()=>{ if (!stopped && !shown) scheduleNext(200); });
+    window.addEventListener('beforeunload', ()=>{ stopped = true; clearTimeout(timerId); try{controller?.abort();}catch{} });
 })();
