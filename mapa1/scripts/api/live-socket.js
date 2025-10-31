@@ -319,6 +319,21 @@ requestAnimationFrame(render);
 
 // --- Socket ---
 export function startLiveSocket() {
+    socket.on('status:live', (msg) => {
+    try {
+        const d = window.__TRACK__ || {};
+        if (Number(msg.reportId) !== Number(d.IDReporte)) return;
+
+        const status = msg.status;
+        const rate   = Number(msg.rate || 0);
+
+        if ((status === 'Completado' || status === 'Cancelado') && rate === 0) {
+        // Por si el polling aún no detecta, dispara de inmediato:
+        showEvalPrompt({ ...d, Status: status, Rate: rate });
+        }
+    } catch (e) { console.warn('[ws] status:live error', e); }
+    });
+
     const track = window.__TRACK__; // viene de mapa.php
     if (!track) return;
 

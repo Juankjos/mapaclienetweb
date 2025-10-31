@@ -42,6 +42,107 @@ document.querySelectorAll('.menu-btn').forEach(btn => {
 });
 
 function showEvalPrompt(d) {
+    //Vigilancia ante cambio de status
+    (function statusWatcher(){
+        const d = window.__TRACK__ || {};
+        if (!d.IDReporte || !d.IDContrato) return;
+
+        let stopped = false;               // corta la vigilancia después de disparar
+        let currentStatus = d.Status;
+        let currentRate   = Number(d.Rate || 0);
+        let timerId = null;
+        let controller = null;
+
+        // Cadencia: rápido si visible, lento si no
+        const FAST_MS = 3000;
+        const SLOW_MS = 10000;
+
+        function scheduleNext(ms){
+            if (stopped) return;
+            clearTimeout(timerId);
+            timerId = setTimeout(runOnce, ms);
+        }
+
+        // Calcula el próximo intervalo según visibilidad
+        function nextInterval() {
+            return document.hidden ? SLOW_MS : FAST_MS;
+        }
+
+        async function runOnce(){
+            if (stopped) return;
+
+            // evita requests solapadas
+            try { controller?.abort(); } catch {}
+            controller = new AbortController();
+
+            try {
+            const url = `check_status.php?reporte=${encodeURIComponent(d.IDReporte)}&contrato=${encodeURIComponent(d.IDContrato)}`;
+            const resp = await fetch(url, { cache: 'no-store', signal: controller.signal });
+            if (!resp.ok) {
+                // En error, reintenta más lento
+                scheduleNext(SLOW_MS);
+                return;
+            }
+            const j = await resp.json();
+            if (!j || !j.ok) {
+                scheduleNext(SLOW_MS);
+                return;
+            }
+
+            const newStatus = j.status;
+            const newRate   = Number(j.rate || 0);
+
+            // Log útil
+            if (newStatus !== currentStatus || newRate !== currentRate) {
+                console.log(`[poll] status: ${currentStatus} -> ${newStatus} | rate: ${currentRate} -> ${newRate}`);
+            }
+
+            currentStatus = newStatus;
+            currentRate   = newRate;
+
+            // 🔔 Dispara cuando pase a Completado o Cancelado con Rate 0
+            if ((newStatus === 'Completado' || newStatus === 'Cancelado') && newRate === 0) {
+                stopped = true;         // no más polling
+                clearTimeout(timerId);
+                try { controller.abort(); } catch {}
+                showEvalPrompt({
+                ...d,
+                Status: newStatus,
+                Rate: newRate
+                });
+                return;
+            }
+
+            // Programa siguiente ciclo
+            scheduleNext(nextInterval());
+
+            } catch (err) {
+            if (err?.name === 'AbortError') {
+                // ignorar, habrá otro ciclo
+            } else {
+                console.warn('[poll] error', err);
+            }
+            scheduleNext(SLOW_MS);
+            }
+        }
+
+        // Arranque inmediato
+        runOnce();
+
+        // Ajusta cadencia al cambiar visibilidad
+        document.addEventListener('visibilitychange', () => {
+            if (stopped) return;
+            scheduleNext(200); // reprograma pronto con la nueva cadencia
+        });
+
+        // Limpia al salir de la página
+        window.addEventListener('beforeunload', () => {
+            stopped = true;
+            clearTimeout(timerId);
+            try { controller?.abort(); } catch {}
+        });
+    })();
+
     const evalUrl = `evaluation.php?reporte=${encodeURIComponent(d.IDReporte)}`;
     const laterUrl = 'ordenes_servicio.php';
 
