@@ -100,7 +100,7 @@ $nombreSesion = !empty($_SESSION['nombre']) ? $_SESSION['nombre'] : ($rows[0]['N
             <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
             Órdenes de Servicio
             </button>
-            <button type="button" class="menu-btn">
+            <button type="button" class="menu-btn" onclick="window.location.href='contacto_soporte.php'">
             <i class="bi bi-person-raised-hand me-2"></i>
             Contacto a Soporte
             </button>
@@ -115,6 +115,17 @@ $nombreSesion = !empty($_SESSION['nombre']) ? $_SESSION['nombre'] : ($rows[0]['N
             <div id="followHelp" class="form-text">
             Disponible cuando tu orden esté <strong>En camino</strong>.
             </div>
+        </div>
+
+        <div class="mt-auto pt-3">
+            <a
+                href="https://api.whatsapp.com/send?phone=5213781495047&text=Hola%2C%20necesito%20ayuda%20con%20mi%20servicio%20t%C3%A9cnico.&source=&data="
+                target="_blank" rel="noopener"
+                class="btn btn-success whatsapp-btn w-100 d-flex align-items-center justify-content-center gap-2 text-decoration-none"
+            >
+                <i class="bi bi-whatsapp fs-3"></i>
+                ¿Necesitas ayuda? Contáctate a soporte técnico en WhatsApp
+            </a>
         </div>
 
         </div>

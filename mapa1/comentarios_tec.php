@@ -149,7 +149,7 @@ function activeBtn($cur, $want){
         <div class="container-fluid d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-3">
                 <a href="rate_tec.php" class="btn btn-outline-primary btn-sm">
-                    <i class="bi bi-arrow-left"></i> Volver
+                    <i class="bi bi-caret-left-fill"></i> Volver
                 </a>
                 <img src="icon/icono.png" class="nav-tech-icon" alt="Logo" />
                 <span class="fw-bold">Comentarios recibidos a <?= esc($tec['NombreTec'] ?: 'Técnico') ?></span>

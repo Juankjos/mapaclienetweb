@@ -36,7 +36,7 @@ if (empty($_SESSION['contrato'])) {
         <div class="container-fluid">
         <div class="d-flex align-items-center gap-2">
             <a class="btn btn-outline-primary btn-sm" href="rate_tec.php">
-            <i class="bi bi-arrow-left"></i> Volver
+            <i class="bi bi-caret-left-fill"></i> Volver
             </a>
             <img src="icon/icono.png" class="nav-tech-icon" alt="Logo" />
             <img src="icon/iconopride.png" id="iconopride" alt="Variación de logo" />

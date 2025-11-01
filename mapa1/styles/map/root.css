@@ -48,7 +48,6 @@ html,body{
 .btn{
   cursor:pointer; 
   font-weight:600; 
-  background:#ffffff;
 }
 
 .btn:hover{

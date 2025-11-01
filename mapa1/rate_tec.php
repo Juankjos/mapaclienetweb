@@ -118,7 +118,7 @@ $tecnicos = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
                 <i class="bi bi-file-earmark-bar-graph-fill me-2"></i>
                 Órdenes de Servicio
                 </button>
-                <button type="button" class="menu-btn">
+                <button type="button" class="menu-btn" onclick="window.location.href='contacto_soporte.php'">
                 <i class="bi bi-person-raised-hand me-2"></i>
                 Contacto a Soporte
                 </button>
