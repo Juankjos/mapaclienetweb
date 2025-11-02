@@ -25,6 +25,7 @@ if (!empty($_SESSION['flash_success'])) {
     <title>Registro - Rastreo de tu Técnico</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="icon/Tvclogo.png">
     <style>
         body {
             background: linear-gradient(135deg, #6610f2, #007bff);
