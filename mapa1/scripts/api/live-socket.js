@@ -1,8 +1,8 @@
 // scripts/api/live-socket.js
 // Cargar socket.io (ESM) desde CDN
 import io from 'https://cdn.socket.io/4.7.5/socket.io.esm.min.js';
-window.showEvalPrompt = showEvalPrompt;
-window.showCanceledPrompt = showCanceledPrompt;
+window.showEvalPrompt   = window.showEvalPrompt   || (() => {});
+window.showCanceledPrompt = window.showCanceledPrompt || (() => {});
 const getMap = () => window._leafletMap;
 
 // Marcadores/capas
@@ -318,8 +318,55 @@ function render(){
 }
 requestAnimationFrame(render);
 
+function resolveSocketBase() {
+    // Si la página viene del propio host (PC o teléfono), intenta mismo host+3001
+    const h = window.location.hostname; // '127.0.0.1', 'localhost', '192.168.x.y', dominio, etc.
+    // Caso A: pruebas con ADB reverse desde el TELÉFONO
+    if (h === '127.0.0.1' || h === 'localhost') return `${window.location.protocol}//${h}:3001`;
+    // Caso B: página cargada desde la LAN o dominio
+    //   - si tu Node escucha en la misma máquina que sirve PHP: usa ese host:3001
+    return `${window.location.protocol}//${h}:3001`;
+    // Si tu Socket.IO vive en otro host, expón window.__SOCKET_HOST__ y devuélvelo aquí.
+}
 // --- Socket ---
 export function startLiveSocket() {
+    const track = window.__TRACK__; // viene de mapa.php
+    if (!track) return;
+
+    const reportId = Number(track.IDReporte);
+    const tecId    = track.NumTec ? Number(track.NumTec) : null;
+
+    // Resetea estado por recargas
+    last = null;
+    target = null;
+    firstFixDone = false;
+    panAccumulator = 0;
+    prevRaw = null;
+    window.__destLive = null;
+    window.__fitDoneOnce = false;
+    lastRouteReqAt = 0;
+    lastRouteFrom  = null;
+
+    const socket = io(resolveSocketBase(), {
+        transports: ['websocket'],
+        query: { reportId, tecId, role: 'client' },
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 800,
+        reconnectionDelayMax: 6000,
+    });
+
+    chatListEl  = document.getElementById('chatList');
+    chatBoxEl   = document.getElementById('chatBox');
+    chatInput   = document.getElementById('chatInput');
+    chatSendBtn = document.getElementById('chatSendBtn');
+    chatReportId = reportId;
+
+    if (chatInput && chatSendBtn) {
+        chatInput.disabled  = true;
+        chatSendBtn.disabled = true;
+    }
+
     socket.on('status:live', (msg) => {
     try {
         const d = window.__TRACK__ || {};
@@ -348,43 +395,6 @@ export function startLiveSocket() {
         }
         } catch (e) { console.warn('[ws] status:live error', e); }
     });
-
-    const track = window.__TRACK__; // viene de mapa.php
-    if (!track) return;
-
-    const reportId = Number(track.IDReporte);
-    const tecId    = track.NumTec ? Number(track.NumTec) : null;
-
-    // Resetea estado por recargas
-    last = null;
-    target = null;
-    firstFixDone = false;
-    panAccumulator = 0;
-    prevRaw = null;
-    window.__destLive = null;
-    window.__fitDoneOnce = false;
-    lastRouteReqAt = 0;
-    lastRouteFrom  = null;
-
-    const socket = io('http://localhost:3001', {
-        transports: ['websocket'],
-        query: { reportId, tecId, role: 'client' },
-        reconnection: true,
-        reconnectionAttempts: Infinity,
-        reconnectionDelay: 800,
-        reconnectionDelayMax: 6000,
-    });
-
-    chatListEl  = document.getElementById('chatList');
-    chatBoxEl   = document.getElementById('chatBox');
-    chatInput   = document.getElementById('chatInput');
-    chatSendBtn = document.getElementById('chatSendBtn');
-    chatReportId = reportId;
-
-    if (chatInput && chatSendBtn) {
-        chatInput.disabled  = true;
-        chatSendBtn.disabled = true;
-    }
 
     socket.on('connect', () => {
         console.log('[live] connected, id=', socket.id);
