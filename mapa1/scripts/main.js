@@ -68,7 +68,6 @@ async function cargar(fitAfterLoad=false){
 
     }catch(e){
         console.error(e);
-        toast('Error al cargar');
         if (elHud) elHud.textContent = 'Error.';
     }finally{
         showLoading(false);
