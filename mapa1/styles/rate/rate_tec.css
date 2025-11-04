@@ -37,15 +37,16 @@
 }
 
 #btn-search{
-    color: #0d6efd
+    color: #0d6efd;
+    border-color: #0d6efd;
 }
 
 #btn-search:hover{
-    color: #ffffff
+    color: #0d6efd,
 }
 
 #btn-register-tec{
-    color: #0d6efd
+    color: #ffffff
 }
 
 #btn-register-tec:hover{
@@ -53,7 +54,7 @@
 }
 
 #btnSelect{
-    color: #0d6efd
+    color: #ffffff
 }
 
 #btnSelect:hover{
@@ -61,7 +62,7 @@
 }
 
 #btnGuardar{
-    color: #0d6efd
+    color: #ffffff
 }
 
 #btnGuardar:hover{

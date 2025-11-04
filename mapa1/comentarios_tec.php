@@ -190,7 +190,7 @@ function activeBtn($cur, $want){
                         <a class="btn btn-outline-danger filter-chip <?= activeBtn($status_q,'Cancelado') ?>" href="?tec=<?= (int)$tecId ?>&status=Cancelado&desde=<?= esc($fecha_desde) ?>&hasta=<?= esc($fecha_hasta) ?>&contrato=<?= esc($contrato_q) ?>&reporte=<?= $reporte_q ?>">Cancelados</a>
                     </div>
 
-                    <button type="submit" class="btn btn-primary ms-auto" id="btn-search">
+                    <button type="submit" class="btn ms-auto" id="btn-search">
                         <i class="bi bi-search me-1"></i> Buscar
                     </button>
                     <a class="btn btn-outline-secondary" href="comentarios_tec.php?tec=<?= (int)$tecId ?>">
