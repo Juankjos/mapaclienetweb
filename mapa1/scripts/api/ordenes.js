@@ -145,6 +145,11 @@ function formatDireccion(raw) {
             const status      = esc(item.Status) || 'Sin estado';
             const numericRate = Number(item.Rate || 0);       // ← numérico
             const rateStars   = starRow(numericRate);  
+            const fechaBlock = (status === 'En camino')? '' :
+                    `<div class="info-block">
+                        <div class="small text-muted">El día:</div>
+                        <div class="fw-semibold">${fecha}</div>
+                    </div>`;
 
             // Mostrar botón de evaluación SOLO si Completado/Cancelado y Rate = 0
             const canEval = (status === 'Completado' || status === 'Cancelado') && numericRate === 0;
@@ -203,10 +208,7 @@ function formatDireccion(raw) {
                                     <div class="small text-muted">En el domicilio:</div>
                                     <div class="fw-semibold">${direccion}</div>
                                 </div>
-                                <div class="info-block">
-                                    <div class="small text-muted">El día:</div>
-                                    <div class="fw-semibold">${fecha}</div>
-                                </div>
+                                ${fechaBlock}
                             </div>
                         </div>
                         ${evalBtn}
