@@ -82,8 +82,10 @@ function formatDireccion(raw) {
         const arr = (items || []).filter(x => (x.Status || '') === 'En camino');
         if (!arr.length) return null;
         arr.sort((a,b) => {
-            const ta = Date.parse((a.FechaAgendado||'1000-01-01').replace(' ', 'T'));
-            const tb = Date.parse((b.FechaAgendado||'1000-01-01').replace(' ', 'T'));
+            const aDateStr = (a.FechaInicio || a.FechaAgendado || '1000-01-01').replace(' ', 'T');
+            const bDateStr = (b.FechaInicio || b.FechaAgendado || '1000-01-01').replace(' ', 'T');
+            const ta = Date.parse(aDateStr);
+            const tb = Date.parse(bDateStr);
             if (tb !== ta) return tb - ta;
             return (b.IDReporte||0) - (a.IDReporte||0);
         });
@@ -141,7 +143,7 @@ function formatDireccion(raw) {
             const titulo = esc(item.Problema) || 'Sin descripción del problema';
             const tecnico = item.NombreTec || (item.IDTec ? `Técnico #${item.IDTec}` : 'Sin asignar');
             const direccion = formatDireccion(item.Direccion);
-            const fecha = fmtFechaLargaEsMX(item.FechaAgendado);
+            const fecha = fmtFechaLargaEsMX(item.FechaInicio);
             const status      = esc(item.Status) || 'Sin estado';
             const numericRate = Number(item.Rate || 0);       // ← numérico
             const rateStars   = starRow(numericRate);  

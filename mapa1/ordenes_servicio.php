@@ -33,7 +33,7 @@ LEFT  JOIN produccion p ON p.IDReporte  = r.IDReporte AND p.IDContrato = r.IDCon
 LEFT  JOIN tecnicos   t ON t.IdTec      = p.IDTec
 WHERE r.IDContrato = ?
     AND p.Status IN ('En camino','Completado','Cancelado')
-ORDER BY COALESCE(r.FechaAgendado, '1000-01-01') DESC, r.IDReporte DESC
+ORDER BY COALESCE(p.FechaInicio, r.FechaAgendado, '1000-01-01') DESC, r.IDReporte DESC
 ";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param('s', $contrato);
@@ -203,7 +203,7 @@ $nombreSesion = !empty($_SESSION['nombre']) ? $_SESSION['nombre'] : ($rows[0]['N
             return [
                 'IDReporte'     => (int)$r['IDReporte'],
                 'Problema'      => $r['Problema'],
-                'FechaAgendado' => $r['FechaAgendado'],
+                'FechaInicio'   => $r['FechaInicio'], 
                 'IDTec'         => isset($r['IDTec']) ? (int)$r['IDTec'] : null,
                 'NombreTec'     => $r['NombreTec'],
                 'Direccion'     => $r['Direccion'],
