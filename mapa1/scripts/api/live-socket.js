@@ -227,12 +227,12 @@ async function drawOsrmRouteToDest(from, to) {
         }
 
         const pts = coords.map(([x,y]) => L.latLng(y,x));
-        if (!routeLine) {
-        routeLine = L.polyline(pts, { weight: 4, color: '#14452F', opacity: 0.9 })
-            .addTo(window._layerCar || m);
-        } else {
-        routeLine.setLatLngs(pts);
-        }
+        // if (!routeLine) {
+        // routeLine = L.polyline(pts, { weight: 4, color: '#14452F', opacity: 0.9 })
+        //     .addTo(window._layerCar || m);
+        // } else {
+        // routeLine.setLatLngs(pts);
+        // }
         updateProgressBar();
         routeLine.bringToFront?.();
     } catch (e) {
@@ -246,12 +246,12 @@ function drawStraightRoute(from, to){
     const m = getMap();
     if (!m || !from || !to) return;
     const pts = [L.latLng(from.lat, from.lng), L.latLng(to.lat, to.lng)];
-    if (!routeLine) {
-        routeLine = L.polyline(pts, { weight: 4, color: '#14452F', opacity: 0.7 })
-        .addTo(window._layerCar || m);
-    } else {
-        routeLine.setLatLngs(pts);
-    }
+    // if (!routeLine) {
+    //     routeLine = L.polyline(pts, { weight: 4, color: '#14452F', opacity: 0.7 })
+    //     .addTo(window._layerCar || m);
+    // } else {
+    //     routeLine.setLatLngs(pts);
+    // }
     routeLine.bringToFront?.();
 }
 
