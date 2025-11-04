@@ -195,11 +195,6 @@ $payload = [
                     <div id="NombreTec" class="tec-name"></div>
                     <div id="NumTec" class="tec-number"></div>
                     </div>
-
-                    <div class="rounded-circle bg-light border profile-avatar"
-                        style="width:48px;height:48px; display:flex; align-items:center; justify-content:center;">
-                    <i class="bi bi-person fs-4 text-secondary"></i>
-                    </div>
                 </div>
 
                 <div id="chatBox" class="chat-box mt-3">
