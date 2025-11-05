@@ -84,7 +84,30 @@ if (empty($_SESSION['contrato'])) {
                 </div>
             </div>
 
-            <input id="inpPlanta" type="text" class="form-control" placeholder="Ej. Tepatitlán, Jalisco." disabled maxlength="100">
+            <select id="inpPlanta" class="form-select" disabled>
+                <option value="">— Seleccionar planta —</option>
+                <option value="Tepatitlán">Tepatitlán</option>
+                <option value="San Juan">San Juan</option>
+                <option value="Jesús María">Jesús María</option>
+                <option value="San José">San José</option>
+                <option value="Atotonilco">Atotonilco</option>
+                <option value="Cuquío">Cuquío</option>
+                <option value="San Ignacio">San Ignacio</option>
+                <option value="Pegueros">Pegueros</option>
+                <option value="Cañadas">Cañadas</option>
+                <option value="Arandas">Arandas</option>
+                <option value="Jalostotitlán">Jalostotitlán</option>
+                <option value="Ixtlahuacán">Ixtlahuacán</option>
+                <option value="San Francisco">San Francisco</option>
+                <option value="Valle de Guadalupe">Valle de Guadalupe</option>
+                <option value="Acatic">Acatic</option>
+                <option value="San Miguel">San Miguel</option>
+                <option value="Milpillas">Milpillas</option>
+                <option value="Mexticacán">Mexticacán</option>
+                <option value="Zapotlanejo">Zapotlanejo</option>
+                <option value="Capilla de Guadalupe">Capilla de Guadalupe</option>
+                <option value="Yahualica">Yahualica</option>
+            </select>
 
             <div class="d-flex gap-2 mt-3">
                 <button id="btnSavePlanta" type="button" class="btn btn-primary" disabled>Guardar</button>
