@@ -13,6 +13,94 @@ $tecId = isset($_GET['tec']) ? (int)$_GET['tec'] : 0;
 if ($tecId <= 0) {
     header('Location: rate_tec.php'); exit;
 }
+// === Handler AJAX del modal de chat (mismo endpoint) ===
+if (isset($_GET['ajax_chat']) && (int)($_GET['report_id'] ?? 0) > 0) {
+    require_once 'db.php';
+    header('Content-Type: text/html; charset=UTF-8');
+
+    $reportId = (int)$_GET['report_id'];
+
+    // Helper local para escapar
+    $esc = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+
+    // Convierte ts en ms (bigint) a fecha legible
+    $fmtTs = function($ms){
+        // ts guardado como milisegundos (bigint), conv a segundos
+        $sec = (int)floor(((int)$ms) / 1000);
+        if ($sec <= 0) return '-';
+        $dt = new DateTime("@$sec"); // UTC
+        $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        return $dt->format('d M Y · H:i');
+    };
+
+    // Trae mensajes de la conversación
+    $sqlChat = "SELECT id, from_role, sender_id, text, ts
+                FROM chat_messages
+                WHERE report_id = ?
+                ORDER BY ts ASC, id ASC
+                LIMIT 1000";
+    $stc = $mysqli->prepare($sqlChat);
+    $stc->bind_param('i', $reportId);
+    $stc->execute();
+    $msgs = $stc->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stc->close();
+
+    if (!$msgs) {
+        echo '<div class="text-body-secondary py-4 text-center">Sin mensajes para este reporte.</div>';
+        exit;
+    }
+
+    $linkify = function(string $escapedHtml): string {
+        $urlPattern = '~(https?://[^\s<]+)~i';
+        return preg_replace_callback($urlPattern, function($m){
+            $u = $m[1];
+            $d = mb_strimwidth($u, 0, 80, '…', 'UTF-8');
+            return '<a href="'.$u.'" target="_blank" rel="noopener">'.$d.'</a>';
+        }, $escapedHtml);
+    };
+
+    $lastDayKey = null;
+    // Renderizamos HTML listo para inyectar en el modal
+    echo '<div class="chat-stream">';
+    foreach ($msgs as $m) {
+        $role = $m['from_role']; // tech | client | system
+        $who  = $role === 'tech' ? 'Técnico' : ($role === 'client' ? 'Cliente' : 'Sistema');
+
+        // Lado visual
+        $sideClass = $role === 'tech' ? 'msg-right' : ($role === 'client' ? 'msg-left' : 'msg-mid');
+        $roleClass = $role === 'tech' ? 'role-tech' : ($role === 'client' ? 'role-client' : 'role-system');
+
+        // Día local (key)
+        $sec = (int)floor(((int)$m['ts']) / 1000);
+        $dt  = new DateTime("@$sec"); $dt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+        $dayKey = $dt->format('Y-m-d');
+        $timeStr = $dt->format('H:i');
+
+        if ($dayKey !== $lastDayKey) {
+            // Imprime separador de día
+            $lastDayKey = $dayKey;
+            // Etiqueta bonita (ej. 04 NOV 2025)
+            $mes = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+            $dia = $dt->format('d');
+            $mesTxt = $mes[(int)$dt->format('n')-1] ?? $dt->format('M');
+            $anno = $dt->format('Y');
+            echo '<div class="chat-day"><span class="pill">'.$dia.' '.$mesTxt.' '.$anno.'</span></div>';
+        }
+
+        // Mensaje
+        $senderId = is_null($m['sender_id']) ? '' : ('<span class="sid">#'.$esc($m['sender_id']).'</span>');
+        $txt = $linkify(nl2br($esc($m['text'])));
+
+        echo '<div class="msg '.$sideClass.' '.$roleClass.'">';
+        echo '  <div style="min-width:0;">';
+        echo '    <div class="msg-head"><span class="who">'.$esc($who).'</span>'.$esc($timeStr).'</span></div>';
+        echo '    <div class="bubble">'.$txt.'</div>';
+        echo '  </div>';
+        echo '</div>';
+    }
+    echo '</div>';
+    exit;
+}
 
 // ====== Parámetros de filtro ======
 $fecha_desde = isset($_GET['desde']) ? trim($_GET['desde']) : '';
@@ -144,6 +232,27 @@ function activeBtn($cur, $want){
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
+    <!-- Modal de Chat -->
+    <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title mb-0" id="chatModalLabel">Chat del reporte</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+            <div class="modal-body">
+            <div id="chatLoader" class="text-center d-none">
+                <div class="spinner-border" role="status" aria-hidden="true"></div>
+                <div class="mt-2 small text-body-secondary">Cargando historial…</div>
+            </div>
+                <div id="chatContent" class="chat-wrap"></div>
+            </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Navbar -->
     <nav class="navbar navbar-light bg-white shadow-sm fixed-top">
@@ -219,6 +328,7 @@ function activeBtn($cur, $want){
                             <th class="nowrap" style="width:130px;">Estado</th>
                             <th>Comentario Cliente</th>
                             <th>Comentario Técnico</th>
+                            <th class="nowrap" style="width:90px;">Chat</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -243,6 +353,18 @@ function activeBtn($cur, $want){
                                     <?php endif; ?>
                                 </td>
                                 <td class="comment-cell"><?= nl2br(esc($comentTec)) ?></td>
+                                <td class="nowrap">
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-outline-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#chatModal"
+                                        data-report-id="<?= (int)$r['IDReporte'] ?>"
+                                        data-contrato="<?= esc($r['IDContrato']) ?>"
+                                        aria-label="Ver chat del reporte <?= (int)$r['IDReporte'] ?>">
+                                        <i class="bi bi-chat-dots"></i>
+                                    </button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -255,5 +377,6 @@ function activeBtn($cur, $want){
     </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="scripts/api/chat_history.js"></script>
 </body>
 </html>
