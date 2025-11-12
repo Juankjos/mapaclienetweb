@@ -149,14 +149,12 @@ $payload = [
             <!-- Controles Follow -->
             <div id="followControls" class="follow-controls">
                 <button id="btnUnfollow" type="button" class="btn btn-light shadow-sm">
-                Dejar de seguir al técnico
+                Dejar de seguir
                 </button>
                 <button id="btnFollow" type="button" class="btn btn-primary shadow-sm" style="display:none">
                 Seguir al técnico
                 </button>
-            </div>
-            <div class="follow-controls">
-                <button type="button" class="btn btn-light shadow-sm">
+                <button id="btnHome" type="button" class="btn btn-outline-secondary shadow-sm" disabled>
                 Mi domicilio
                 </button>
             </div>

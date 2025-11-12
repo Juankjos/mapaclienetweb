@@ -54,3 +54,8 @@
     padding:8px 14px;
     font-weight:600;
 }
+
+#btnHome[disabled] {
+    opacity: .6;
+    cursor: not-allowed;
+}

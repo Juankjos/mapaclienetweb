@@ -46,15 +46,22 @@ window.__followTec = true;
 function updateFollowButtonsUI(){
     const bUnf = document.getElementById('btnUnfollow');
     const bFol = document.getElementById('btnFollow');
-    if (!bUnf || !bFol) return;
-    if (window.__followTec) {
-        bUnf.style.display = '';
-        bFol.style.display = 'none';
-    } else {
-        bUnf.style.display = 'none';
-        bFol.style.display = '';
+    const bHome = document.getElementById('btnHome'); // Mi domicilio
+
+    if (bUnf && bFol) {
+        if (window.__followTec) {
+            bUnf.style.display = '';
+            bFol.style.display = 'none';
+        } else {
+            bUnf.style.display = 'none';
+            bFol.style.display = '';
+        }
+    }
+    if (bHome) {
+        bHome.disabled = !!window.__followTec; // deshabilitado si seguimos al técnico
     }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const bUnf = document.getElementById('btnUnfollow');
@@ -84,25 +91,52 @@ document.addEventListener('DOMContentLoaded', () => {
 // Helpers globales para botones
 window.focusTechnician = function(){
     try {
-        if (window._liveTarget) {
-            const { lat, lng } = window._liveTarget;
-            map.setView([lat, lng], Math.max(18, map.getZoom() || 18), { animate: true });
-        }
+        const map = getMap();                // ✅ obtener mapa aquí
+        const live = window._liveTarget;
+        if (!map || !live) return;
+        const { lat, lng } = live;
+        map.setView([lat, lng], Math.max(18, map.getZoom() || 18), { animate: true });
     } catch(_) {}
 };
 
-window.focusDestination = function(preferBounds = true){
+
+
+window.focusDestination = async function(preferBounds = true){
     try {
-        const dest = window.__destLive;
+        const map  = getMap();               // ✅ obtener mapa aquí
+        if (!map) return;
+
+        // si aún no ha llegado el destino, espera un momento
+        const dest = window.__destLive || await waitForDestination();
         const live = window._liveTarget;
-        if (preferBounds && dest && live) {
+
+        if (!dest) {
+            // feedback opcional
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                icon: 'info',
+                title: 'Sin destino aún',
+                text: 'Todavía no tenemos el pin de tu domicilio. Intenta de nuevo en unos segundos.',
+                confirmButtonText: 'OK'
+                });
+            }
+        return;
+        }
+
+        if (preferBounds && live) {
             const bounds = L.latLngBounds([live.lat, live.lng], [dest.lat, dest.lng]).pad(0.15);
             map.fitBounds(bounds, { animate: true });
-            return;
-        }
-        if (dest) {
+        } else {
             map.setView([dest.lat, dest.lng], Math.max(17, map.getZoom() || 17), { animate: true });
         }
+
+        // halo visual opcional para “Mi domicilio”
+        try {
+        const halo = L.circle([dest.lat, dest.lng], {
+            radius: 30, color: '#3388ff', weight: 2, opacity: 0.8, fillOpacity: 0.15
+        }).addTo(map);
+        setTimeout(() => { try { map.removeLayer(halo); } catch(_){} }, 1200);
+        } catch(_) {}
     } catch(_) {}
 };
 

@@ -1,4 +1,73 @@
 // Actualiza varios elementos aunque el ID esté duplicado en el HTML
+window.__followTec = true;
+
+function updateFollowButtonsUI(){
+    const bUnf = document.getElementById('btnUnfollow');
+    const bFol = document.getElementById('btnFollow');
+    const bHome = document.getElementById('btnHome');
+
+    if (bUnf && bFol) {
+        if (window.__followTec) {
+            bUnf.style.display = '';
+            bFol.style.display = 'none';
+        } else {
+            bUnf.style.display = 'none';
+            bFol.style.display = '';
+        }
+    }
+
+    // "Mi domicilio" solo habilitado cuando NO estamos siguiendo
+    if (bHome) {
+        bHome.disabled = !!window.__followTec;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const bUnf = document.getElementById('btnUnfollow');
+    const bFol = document.getElementById('btnFollow');
+    const bHome = document.getElementById('btnHome');
+
+    if (bUnf) bUnf.addEventListener('click', () => {
+        window.__followTec = false;
+        // al dejar de seguir, opcional: encuadrar técnico+destino
+        if (typeof window.focusDestination === 'function') {
+            window.focusDestination(/*preferBounds=*/true);
+        }
+        updateFollowButtonsUI();
+    });
+
+    if (bFol) bFol.addEventListener('click', () => {
+        window.__followTec = true;
+        if (typeof window.focusTechnician === 'function') {
+            window.focusTechnician();
+        }
+        updateFollowButtonsUI();
+    });
+
+    if (bHome) bHome.addEventListener('click', () => {
+        // Solo centra en el domicilio (destino); NO cambia el follow
+        if (typeof window.focusDestination === 'function') {
+            // preferBounds = false para ir directo al destino
+            const hadDest = !!window.__destLive;
+            window.focusDestination(false);
+            if (!hadDest) {
+                // Feedback si aún no tenemos destino
+                if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sin destino aún',
+                    text: 'Todavía no tenemos el pin de tu domicilio. Intenta de nuevo en unos segundos.',
+                    confirmButtonText: 'OK'
+                });
+                } else {
+                alert('Todavía no tenemos el pin de tu domicilio. Intenta de nuevo en unos segundos.');
+                }
+            }
+            }
+    });
+    updateFollowButtonsUI();
+});
+
 function setAllById(id, text) {
     document.querySelectorAll('[id="'+id+'"]').forEach(el => {
         el.textContent = text ?? '';
