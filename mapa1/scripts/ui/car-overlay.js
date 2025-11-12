@@ -189,7 +189,7 @@ if (!map) {
 
     // 6) Auto-follow suave del mapa (no todo frame)
     followAcc += dt;
-    if (followAcc > 0.3) {
+    if (window.__followTec && followAcc > 0.3) {
       followAcc = 0;
       try { map.panTo([target.lat, target.lng], { animate: true, duration: 0.3 }); } catch (e) {}
     }

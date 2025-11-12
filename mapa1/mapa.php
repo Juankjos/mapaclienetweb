@@ -146,6 +146,20 @@ $payload = [
                 <div class="bm-title">Oscuro</div>
             </div>
             </div>
+            <!-- Controles Follow -->
+            <div id="followControls" class="follow-controls">
+                <button id="btnUnfollow" type="button" class="btn btn-light shadow-sm">
+                Dejar de seguir al técnico
+                </button>
+                <button id="btnFollow" type="button" class="btn btn-primary shadow-sm" style="display:none">
+                Seguir al técnico
+                </button>
+            </div>
+            <div class="follow-controls">
+                <button type="button" class="btn btn-light shadow-sm">
+                Mi domicilio
+                </button>
+            </div>
         </div>
 
         <div id="map"></div>

@@ -42,3 +42,15 @@
 .ui-card.below{ 
     top:140px; 
 }
+
+.follow-controls{
+    right:12px;
+    bottom:16px;
+    z-index:500;
+    gap:8px;
+}
+.follow-controls .btn{
+    border-radius:999px;
+    padding:8px 14px;
+    font-weight:600;
+}

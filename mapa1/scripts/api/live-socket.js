@@ -40,6 +40,72 @@ let chatInput  = null;
 let chatSendBtn = null;
 let chatReportId = null;
 
+// Flag global por defecto (sí seguir)
+window.__followTec = true;
+
+function updateFollowButtonsUI(){
+    const bUnf = document.getElementById('btnUnfollow');
+    const bFol = document.getElementById('btnFollow');
+    if (!bUnf || !bFol) return;
+    if (window.__followTec) {
+        bUnf.style.display = '';
+        bFol.style.display = 'none';
+    } else {
+        bUnf.style.display = 'none';
+        bFol.style.display = '';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const bUnf = document.getElementById('btnUnfollow');
+    const bFol = document.getElementById('btnFollow');
+
+    if (bUnf) bUnf.addEventListener('click', () => {
+        window.__followTec = false;
+        // intenta enfocar el destino cuando deje de seguir
+        if (typeof window.focusDestination === 'function') {
+            window.focusDestination(/*preferBounds=*/true);
+        }
+        updateFollowButtonsUI();
+    });
+
+    if (bFol) bFol.addEventListener('click', () => {
+        window.__followTec = true;
+        // centra inmediatamente al técnico si tenemos última posición
+        if (typeof window.focusTechnician === 'function') {
+            window.focusTechnician();
+        }
+        updateFollowButtonsUI();
+    });
+
+    updateFollowButtonsUI();
+});
+
+// Helpers globales para botones
+window.focusTechnician = function(){
+    try {
+        if (window._liveTarget) {
+            const { lat, lng } = window._liveTarget;
+            map.setView([lat, lng], Math.max(18, map.getZoom() || 18), { animate: true });
+        }
+    } catch(_) {}
+};
+
+window.focusDestination = function(preferBounds = true){
+    try {
+        const dest = window.__destLive;
+        const live = window._liveTarget;
+        if (preferBounds && dest && live) {
+            const bounds = L.latLngBounds([live.lat, live.lng], [dest.lat, dest.lng]).pad(0.15);
+            map.fitBounds(bounds, { animate: true });
+            return;
+        }
+        if (dest) {
+            map.setView([dest.lat, dest.lng], Math.max(17, map.getZoom() || 17), { animate: true });
+        }
+    } catch(_) {}
+};
+
 function formatTime(ts){
     try {
         const d = new Date(Number(ts) || Date.now());
@@ -305,16 +371,16 @@ function render(){
     maybeRecalcRoute();
 
     // Auto-pan
-    if (!firstFixDone) {
-        firstFixDone = true;
-        try { map.setView([last.lat, last.lng], Math.max(18, map.getZoom() || 18), { animate: false }); } catch (_) {}
-    } else {
-        panAccumulator += 1/60; // aprox (60fps)
-        if (panAccumulator > 0.3) { // ≈ cada 0.3s
-        panAccumulator = 0;
-        try { map.panTo([target.lat, target.lng], { animate: true, duration: 0.3 }); } catch (_) {}
-        }
-    }
+if (!firstFixDone) {
+  firstFixDone = true;
+  try { map.setView([last.lat, last.lng], Math.max(18, map.getZoom() || 18), { animate: false }); } catch (_) {}
+} else if (window.__followTec) {
+  panAccumulator += 1/60;
+  if (panAccumulator > 0.3) {
+    panAccumulator = 0;
+    try { map.panTo([target.lat, target.lng], { animate: true, duration: 0.3 }); } catch (_) {}
+  }
+}
 }
 requestAnimationFrame(render);
 
@@ -469,11 +535,8 @@ export function startLiveSocket() {
 
         // Fit técnico+destino al recibir destino por primera vez (si ya hay target)
         try {
-        if (target && !window.__fitDoneOnce) {
-            const bounds = L.latLngBounds(
-            [target.lat, target.lng],
-            [window.__destLive.lat, window.__destLive.lng]
-            ).pad(0.15);
+        if (window.__followTec && target && !window.__fitDoneOnce) {
+            const bounds = L.latLngBounds([target.lat, target.lng], [lat, lng]).pad(0.15);
             map.fitBounds(bounds, { animate: true });
             window.__fitDoneOnce = true;
         }
