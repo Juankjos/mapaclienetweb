@@ -230,7 +230,7 @@ $payload = [
                 <div class="servicio-card">
                 <!-- Contrato -->
                 <div class="servicio-item d-flex align-items-start gap-3">
-                    <i class="bi bi-clipboard2-data servicio-icon"></i>
+                    <i class="bi bi-person-vcard servicio-icon"></i>
                     <div>
                     <div class="servicio-label">Contrato</div>
                     <div id="IDContrato" class="servicio-value"></div>
