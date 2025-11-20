@@ -432,9 +432,11 @@ function resolveSocketBase() {
 export function startLiveSocket() {
     const track = window.__TRACK__; // viene de mapa.php
     if (!track) return;
+console.log('[live] TRACK =', track);
+console.log('[live] track.IDTec =', track.IDTec);
 
     const reportId = Number(track.IDReporte);
-    const tecId    = track.NumTec ? Number(track.NumTec) : null;
+    const tecId    = track.IDTec ? Number(track.IDTec) : null;
 
     // Resetea estado por recargas
     last = null;
@@ -544,37 +546,62 @@ export function startLiveSocket() {
     // Destino live enviado por Flutter
     socket.on('destination:live', (msg) => {
         const map = getMap();
-        if (!map) return;
+        if (!map) {
+            console.warn('[live] destination:live sin mapa aún', msg);
+            return;
+        }
 
         const lat = Number(msg.lat), lng = Number(msg.lng);
-        if (!isFinite(lat) || !isFinite(lng)) return;
+        console.log('[live] destination:live coords =', lat, lng, 'raw msg=', msg);
 
+        if (!isFinite(lat) || !isFinite(lng)) {
+            console.warn('[live] destination:live coords inválidas', msg);
+            return;
+        }
+
+        // Guarda destino global
         window.__destLive = { lat, lng };
 
         const ll = L.latLng(lat, lng);
+
         if (!destMarker) {
-        destMarker = L.marker(ll, {
+            // 👇 fuerza que el pin vaya directo al mapa
+            destMarker = L.marker(ll, {
             icon: L.divIcon({
-            html: '<div style="transform:translate(-50%,-100%);color:#c00;font-size:24px">📍</div>',
-            className: 'dest-pin',
-            iconSize: [24, 24],
+                html: '<div style="transform:translate(-50%,-100%);color:#c00;font-size:24px">📍</div>',
+                className: 'dest-pin',
+                iconSize: [24, 24],
             })
-        }).addTo(window._layerCar || map);
+            }).addTo(map);
         } else {
-        destMarker.setLatLng(ll);
+            destMarker.setLatLng(ll);
         }
 
-        // Recalcular ruta si ya hay target
-        if (target) maybeRecalcRoute();
-
-        // Fit técnico+destino al recibir destino por primera vez (si ya hay target)
+        // Fit técnico + destino una sola vez si ya hay target
         try {
-        if (window.__followTec && target && !window.__fitDoneOnce) {
-            const bounds = L.latLngBounds([target.lat, target.lng], [lat, lng]).pad(0.15);
+            if (window.__followTec && target && !window.__fitDoneOnce) {
+            const bounds = L.latLngBounds(
+                [target.lat, target.lng],
+                [lat, lng]
+            ).pad(0.15);
             map.fitBounds(bounds, { animate: true });
             window.__fitDoneOnce = true;
+            }
+        } catch (e) {
+            console.warn('[live] error en fitBounds destino', e);
         }
-        } catch(_) {}
+
+        // Opcional: resaltar domicilio con un halo
+        try {
+            const halo = L.circle([lat, lng], {
+            radius: 30,
+            color: '#c00',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.15,
+            }).addTo(map);
+            setTimeout(() => { try { map.removeLayer(halo); } catch (_) {} }, 1200);
+        } catch (_) {}
     });
 
     socket.on('disconnect', () => {
