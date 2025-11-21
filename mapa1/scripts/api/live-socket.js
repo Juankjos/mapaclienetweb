@@ -422,7 +422,7 @@ function resolveSocketBase() {
     // Si la página viene del propio host (PC o teléfono), intenta mismo host+3001
     const h = window.location.hostname; // '127.0.0.1', 'localhost', '192.168.x.y', dominio, etc.
     // Caso A: pruebas con ADB reverse desde el TELÉFONO
-    if (h === '127.0.0.1' || h === 'localhost') return `${window.location.protocol}//${h}:3001`;
+    if (h === '167.99.163.209' || h === '167.99.163.209') return `${window.location.protocol}//${h}:3001`;
     // Caso B: página cargada desde la LAN o dominio
     //   - si tu Node escucha en la misma máquina que sirve PHP: usa ese host:3001
     return `${window.location.protocol}//${h}:3001`;

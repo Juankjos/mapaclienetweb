@@ -32,7 +32,7 @@ import mysql.connector
 from mysql.connector import Error
 
 # ------------------------- CONFIGURACIÓN ------------------------- #
-DB_HOST = "127.0.0.1"
+DB_HOST = "167.99.163.209"
 DB_PORT = 3306
 DB_USER = "root"
 DB_PASSWORD = ""       # Ajusta si tu root tiene contraseña

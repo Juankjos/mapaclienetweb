@@ -1,5 +1,5 @@
 <?php
-$DB_HOST = '127.0.0.1';
+$DB_HOST = '167.99.163.209';
 $DB_USER = 'root';
 $DB_PASS = '';
 $DB_NAME = 'clientes';
