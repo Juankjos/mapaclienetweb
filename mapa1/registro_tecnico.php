@@ -46,7 +46,7 @@ if (empty($_SESSION['contrato'])) {
     </nav>
 
     <main class="container panel" style="margin-top:84px;">
-        <h3 class="mb-3">Registro de técnico</h3>
+        <h3 class="mb-3">Registro y Modificación de Técnico</h3>
 
         <!-- Selección de técnico -->
         <div class="card shadow-sm mb-3">

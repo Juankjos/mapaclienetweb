@@ -110,8 +110,8 @@ $tecnicos = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
                 Calificaciones
                 </button>
                 <button type="button" class="menu-btn" onclick="window.location.href='registro_tecnico.php'">
-                <i class="bi bi-person-plus me-2"></i>
-                Registro de técnico
+                <i class="bi bi-pencil me-2"></i>
+                Registro y Modificación de Técnico
                 </button>
                 <!-- Sin Órdenes de Servicio ni Contacto a Soporte para Mesa -->
             <?php else: ?>
@@ -145,7 +145,7 @@ $tecnicos = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
                 </div>
             <div class="d-flex gap-2 align-items-center">
                 <a id="btn-register-tec" class="btn btn-sm btn-primary" href="registro_tecnico.php">
-                    <i class="bi bi-person-plus me-1"></i> Registro y Modificación de técnico
+                    <i class="bi bi-pencil me-1"></i> Registro y Modificación de técnico
                 </a>
             </div>
         </div>
