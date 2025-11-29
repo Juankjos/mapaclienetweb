@@ -1,6 +1,8 @@
 # Mapa de Clientes Web
 
-Aplicación web que muestra en un mapa la ubicación de los clientes y/o servicios, para apoyar la operación de campo y el seguimiento de rutas de los técnicos. (Proyecto anexado a Tecnicliente con web socket)
+Aplicación web que muestra en un mapa la ubicación de los clientes y/o servicios, para apoyar la operación de campo y el seguimiento de rutas de los técnicos.
+
+###(Proyecto anexado a Tecnicliente con web socket)
 
 Este proyecto está construido con **PHP**, **JavaScript**, **CSS** y algunos scripts en **Python** para el procesamiento de datos.
 
